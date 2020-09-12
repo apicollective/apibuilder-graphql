@@ -1,0 +1,8 @@
+---
+apicollective:
+  apibuilder-common:
+    play_2_x_standalone_json:
+    - src/main/scala/io/apibuilder/generated/ApicollectiveApibuilderCommonV0Models.scala
+  apibuilder-generator:
+    play_2_x_standalone_json:
+    - src/main/scala/io/apibuilder/generated/ApicollectiveApibuilderGeneratorV0Models.scala

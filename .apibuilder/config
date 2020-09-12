@@ -1,0 +1,14 @@
+code:
+  apicollective:
+    apibuilder-common:
+      version: latest
+      generators:
+        play_2_x_standalone_json: generated/app/apibuilder
+    apibuilder-spec:
+      version: latest
+      generators:
+        play_2_x_standalone_json: generated/app/apibuilder
+    apibuilder-generator:
+      version: latest
+      generators:
+        play_2_x_standalone_json: generated/app/apibuilder

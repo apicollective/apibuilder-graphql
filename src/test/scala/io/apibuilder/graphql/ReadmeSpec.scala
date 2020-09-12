@@ -1,19 +1,16 @@
-# apibuilder-graphql
+package io.apibuilder.graphql
 
-GraphQL Code Generator for ApiBuilder Services.
+import cats.data.Validated.{Invalid, Valid}
+import io.apibuilder.validation.MultiService
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-## Install
+/**
+ * Test the example(s) shown in readme
+ */
+class ReadmeSpec extends AnyWordSpec with Matchers {
 
-```
-      "io.apibuilder" %% "apibuilder-graphql" % "0.0.2"
-```
-
-## Usage
-
-```
-    import cats.data.Validated.{Invalid, Valid}
-    import io.apibuilder.validation.MultiService
-
+  "usage" in {
     MultiService.fromUrls(
       List(
         "https://app.apibuilder.io/apicollective/apibuilder-common/latest/service.json",
@@ -44,5 +41,6 @@ GraphQL Code Generator for ApiBuilder Services.
         }
       }
     }
-```
+  }
 
+}

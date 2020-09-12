@@ -10,6 +10,12 @@ import io.apibuilder.graphql.generators.schema.{ApiBuilderTypeToGraphQLConverter
 import io.apibuilder.graphql.util.MultiServiceView
 import io.apibuilder.validation.MultiService
 
+object GraphQLCodeGenerator {
+  val Default: GraphQLCodeGenerator = GraphQLCodeGenerator(
+    schemaValidator = SchemaValidator()
+  )
+}
+
 case class GraphQLCodeGenerator(schemaValidator: SchemaValidator) {
   private[this] def buildTypeSchema(ms: MultiService, intent: GraphQLIntent): Seq[GraphQLType] = {
     ms.allTypes.map { t =>

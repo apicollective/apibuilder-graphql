@@ -2,6 +2,7 @@ package io.apibuilder.graphql.schema
 
 import io.apibuilder.graphql.generators.schema.LocalScalarType
 import io.apibuilder.graphql.util.{MultiServiceView, Text}
+import io.apibuilder.spec.v0.models.Method
 import io.apibuilder.validation.ApiBuilderType
 
 import scala.annotation.tailrec
@@ -10,6 +11,14 @@ sealed trait GraphQLIntent
 object GraphQLIntent {
   case object Mutation extends GraphQLIntent
   case object Query extends GraphQLIntent
+
+  def apply(method: Method): GraphQLIntent = {
+    import Method._
+    method match {
+      case Get | Connect | Head | Options | Trace | UNDEFINED(_) => GraphQLIntent.Query
+      case Delete | Post | Put | Patch => GraphQLIntent.Mutation
+    }
+  }
 }
 
 sealed trait GraphQLType {

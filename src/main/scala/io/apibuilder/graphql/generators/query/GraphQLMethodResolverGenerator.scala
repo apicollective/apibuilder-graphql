@@ -1,7 +1,7 @@
 package io.apibuilder.graphql.generators.query
 
 import apibuilder.{ApiBuilderHelper, ApiBuilderHelperImpl}
-import io.apibuilder.graphql.{GraphQLMethod, GraphQLOperation}
+import io.apibuilder.graphql.GraphQLOperation
 import io.apibuilder.graphql.generators.builders.TypeScriptFileBuilder
 import io.apibuilder.graphql.generators.schema.LocalScalarType
 import io.apibuilder.graphql.schema.GraphQLIntent
@@ -89,7 +89,7 @@ case class GraphQLMethodResolverGenerator(multiService: MultiService) extends Pa
   }
 
   private[this] def buildBodyFragment(builder: TypeScriptFileBuilder, op: GraphQLOperation): String = {
-    GraphQLMethod(op.intentOperation.method).intent match {
+    GraphQLIntent(op.intentOperation.method) match {
       case GraphQLIntent.Query => ""
       case GraphQLIntent.Mutation => {
         op.intentOperation.body match {

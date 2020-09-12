@@ -18,7 +18,7 @@ case class GraphQLOperation(
   attribute: GraphQLAttribute,
 ) {
   private[this] val helper: ApiBuilderHelper = ApiBuilderHelperImpl(multiService)
-  val methodIntent: GraphQLIntent = GraphQLMethod(originalOperation.method).intent
+  val methodIntent: GraphQLIntent = GraphQLIntent(originalOperation.method)
 
   lazy val intentOperation: Operation = graphQLIntent match {
     case GraphQLIntent.Query => operationForQuery

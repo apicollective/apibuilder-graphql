@@ -13,6 +13,7 @@ GraphQL Code Generator for ApiBuilder Services.
 ```
     import cats.data.Validated.{Invalid, Valid}
     import io.apibuilder.validation.MultiService
+    import io.apibuilder.graphql.GraphQLCodeGenerator
 
     MultiService.fromUrls(
       List(

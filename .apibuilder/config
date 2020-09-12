@@ -3,12 +3,8 @@ code:
     apibuilder-common:
       version: latest
       generators:
-        play_2_x_standalone_json: generated/app/apibuilder
-    apibuilder-spec:
-      version: latest
-      generators:
-        play_2_x_standalone_json: generated/app/apibuilder
+        play_2_x_standalone_json: src/main/scala/io/apibuilder/generated/
     apibuilder-generator:
       version: latest
       generators:
-        play_2_x_standalone_json: generated/app/apibuilder
+        play_2_x_standalone_json: src/main/scala/io/apibuilder/generated/

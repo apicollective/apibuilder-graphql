@@ -1,0 +1,121 @@
+package io.apibuilder.graphql.generators.query
+
+import apibuilder.ApiBuilderHelperImpl
+import io.apibuilder.graphql.GraphQLOperation
+import io.apibuilder.graphql.generators.schema.ApiBuilderTypeToGraphQLConverter
+import io.apibuilder.graphql.schema.GraphQLIntent
+import io.apibuilder.graphql.util.{MultiServiceView, Text}
+import io.apibuilder.spec.v0.models._
+import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
+
+case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends ParameterHelpers {
+
+  private[this] val helper = ApiBuilderHelperImpl(multiService)
+
+  def generate(intent: GraphQLIntent): Option[String] = {
+    def converter(apiBuilderService: ApiBuilderService) = ApiBuilderTypeToGraphQLConverter(
+      multiService,
+      intent,
+      namespace = apiBuilderService.service.namespace,
+    )
+
+    GraphQLOperation.all(multiService, intent)
+      .filter(_.methodIntent == intent)
+      .map { op =>
+      generate(converter(op.service), op)
+    }.filterNot(_.isEmpty).toList match {
+      case Nil => None
+      case clauses => Some(clauses.mkString("\n\n"))
+    }
+  }
+
+  private[this] def generate(converter: ApiBuilderTypeToGraphQLConverter, op: GraphQLOperation): String = {
+    val params = allParametersWithBody(op.originalOperation).map { p => toParam(converter, op, p) } match {
+      case Nil => ""
+      case els => "(" + els.mkString(", ") + ")"
+    }
+    val responseType = stripInputSuffix(converter.mustFindFieldTypeDeclaration(op.description, op.response.`type`))
+
+    Seq(
+      toComment(op),
+      s"${op.attribute.name}$params: $responseType"
+    ).mkString("\n")
+  }
+
+  private[this] def toComment(op: GraphQLOperation): String = {
+    val name = helper.resolveType(op.service.service, op.resource) match {
+      case None => s"Service ${op.service.name}"
+      case Some(t: ApiBuilderType) => s"Resource ${t.qualified}"
+      case Some(t: ScalarType) => s"Scalar ${t.name}"
+    }
+    Seq(
+      s"$name ${op.resource.path.getOrElse("N/A")}",
+      op.description,
+      s"Response ${toText(op.response.code)} ${op.response.`type`}",
+    ).map { p => s"# $p" }.mkString("\n")
+  }
+
+  private[this] def toText(code: ResponseCode): String = {
+    code match {
+      case v: ResponseCodeInt => v.value.toString
+      case ResponseCodeUndefinedType(other) => other
+      case ResponseCodeOption.Default => "*"
+      case ResponseCodeOption.UNDEFINED(other) => other
+    }
+  }
+
+  private[this] def toParam(converter: ApiBuilderTypeToGraphQLConverter, op: GraphQLOperation, param: Parameter): String = {
+    Text.camelCase(param.name) + ": " +
+      converter.mustFindFieldTypeDeclaration(s"${op.description} parameter '${param.name}'", param.`type`) +
+      requiredFlag(param) +
+      defaultValue(op.service, param)
+  }
+
+  private[this] def defaultValue(service: ApiBuilderService, param: Parameter): String = {
+    param.default match {
+      case None => ""
+      case Some(d) => {
+        def unsupportedError = sys.error(s"Non-scalar type [${param.`type`}] is not supported.")
+        import ScalarType._
+
+        val value = helper.resolveType(service.service, param) match  {
+          case None => {
+            unsupportedError
+          }
+          case Some(typ) => {
+            typ match {
+              case s: ScalarType => {
+                s match {
+                  case BooleanType | DoubleType | IntegerType | DecimalType | FloatType | LongType | JsonType | ObjectType => d
+                  case StringType | DateIso8601Type | DateTimeIso8601Type | UuidType => Text.wrapInQuotes(d)
+                  case UnitType => "null"
+                }
+              }
+              case _: ApiBuilderType.Model => unsupportedError
+              case _: ApiBuilderType.Union => unsupportedError
+              case _: ApiBuilderType.Enum => Text.allCaps(d)
+            }
+          }
+        }
+        " = " + value
+      }
+    }
+  }
+
+  private[this] def requiredFlag(param: Parameter): String = {
+    if (param.required) {
+      "!"
+    } else {
+      ""
+    }
+  }
+
+  private[this] def stripInputSuffix(value: String): String = {
+    val input = Text.pascalCase(MultiServiceView.InputSuffix)
+    if (value.endsWith(input)) {
+      value.dropRight(input.length)
+    } else {
+      value
+    }
+  }
+}

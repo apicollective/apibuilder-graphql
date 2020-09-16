@@ -13,23 +13,25 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
   private[this] val helper = ApiBuilderHelperImpl(multiService)
 
   def generate(intent: GraphQLIntent): Option[String] = {
-    def converter(apiBuilderService: ApiBuilderService) = ApiBuilderTypeToGraphQLConverter(
-      multiService,
-      intent,
-      namespace = apiBuilderService.service.namespace,
+    generate(
+      GraphQLOperation.all(multiService, intent).filter(_.methodIntent == intent)
     )
+  }
 
-    GraphQLOperation.all(multiService, intent)
-      .filter(_.methodIntent == intent)
-      .map { op =>
-      generate(converter(op.service), op)
-    }.filterNot(_.isEmpty).toList match {
+  private[this] def generate(operations: Seq[GraphQLOperation]): Option[String] = {
+    operations.map(generate).toList match {
       case Nil => None
       case clauses => Some(clauses.mkString("\n\n"))
     }
   }
 
-  private[this] def generate(converter: ApiBuilderTypeToGraphQLConverter, op: GraphQLOperation): String = {
+  private[this] def generate(op: GraphQLOperation): String = {
+    val converter = ApiBuilderTypeToGraphQLConverter(
+      multiService,
+      op.graphQLIntent,
+      namespace = op.service.namespace,
+    )
+
     val params = allParametersWithBody(op.originalOperation).map { p => toParam(converter, op, p) } match {
       case Nil => ""
       case els => "(" + els.mkString(", ") + ")"

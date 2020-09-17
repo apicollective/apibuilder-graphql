@@ -1,0 +1,10 @@
+type Query {
+  User: UserQueries
+}
+
+type UserQueries {
+  # Resource test.apicollective.a89ddbe5e-84ae-4a05-a38b-20febffff142.models.user N/A
+  # Operation 'GET /users' response '200'
+  # Response 200 [user]
+  users(userId: String): [User!]
+}

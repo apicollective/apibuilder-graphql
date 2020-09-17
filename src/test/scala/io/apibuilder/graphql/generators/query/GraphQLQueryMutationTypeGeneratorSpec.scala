@@ -1,29 +1,37 @@
 package io.apibuilder.graphql.generators.query
 
-import io.apibuilder.graphql.generators.helpers.GraphQLApiBuilderServiceHelpers
+import io.apibuilder.graphql.generators.helpers.{CodeGenTestHelpers, GraphQLApiBuilderServiceHelpers}
 import io.apibuilder.graphql.schema.GraphQLIntent
-import io.apibuilder.spec.v0.models.{Method, Parameter, ParameterLocation, Service}
+import io.apibuilder.spec.v0.models.{Method, Parameter, Service}
 import io.apibuilder.validation.MultiService
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers with GraphQLApiBuilderServiceHelpers {
+class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
+  with GraphQLApiBuilderServiceHelpers
+  with CodeGenTestHelpers
+{
 
-  def gen(service: Service): String = {
-    gen(makeMultiService(service))
+  override val codeGenTestHelpersDir = "query"
+
+  def verify(fileName: String, service: Service): Unit = {
+    verify(fileName: String, makeMultiService(service))
   }
 
-  def gen(multiService: MultiService): String = {
-    stripComments(
+  def verify(fileName: String, multiService: MultiService): Unit = {
+    mustMatchFile(
+      fileName,
       GraphQLQueryMutationTypeGenerator(multiService).generate(GraphQLIntent.Query).get.formatted
     )
   }
 
-  private[this] def gen(
+  def verify(
+    fileName: String,
     responseType: String = "user",
     parameters: Seq[Parameter] = Nil,
-  ): String = {
-    gen(
+  ): Unit = {
+    verify(
+      fileName,
       userService(
         responseType = responseType,
         parameters = parameters,
@@ -31,13 +39,9 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers wi
     )
   }
 
-  private[this] def stripComments(value: String): String = {
-    value.split("\n").map(_.trim).filterNot(_.startsWith("#")).mkString("\n")
-  }
-
   private[this] val userModel = makeModel("user", plural = "users")
 
-  private[this] def userService(
+  def userService(
     responseType: String,
     modelType: String = "user",
     parameters: Seq[Parameter] = Nil,
@@ -69,13 +73,15 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers wi
   }
 
   "GET /users" must {
-    def param(p: Parameter) = {
-      gen(
+    def verifyParam(fileName: String, p: Parameter) = {
+      verify(
+        fileName = fileName,
         responseType = "[user]",
         parameters = Seq(p)
       )
     }
 
+    /*
     "no parameters" in {
       gen(
         responseType = "[user]",
@@ -91,20 +97,18 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers wi
         "users(id: [String!]): [User!]"
       )
     }
+    */
 
     "camelCase" in {
-      param(
+      verifyParam(
+        "getUsersCamelCase",
         makeParameter("user_id", "string", required = false)
-      ) must equal(
-        Seq(
-          """
-            |type Users {
-            |  findAll(userId: String): [User!]
-            |}""".stripMargin
-        )
       )
     }
+  }
+}
 
+    /*
     "default" must {
       "integer" must {
         "optional" in {
@@ -231,3 +235,4 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers wi
     }
   }
 }
+*/

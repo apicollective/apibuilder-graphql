@@ -30,7 +30,7 @@ GraphQL Code Generator for ApiBuilder Services.
         GraphQLCodeGenerator.Default.generate(multiService) match {
           case Valid(schema) => {
             println("Schema is valid.")
-            schema.invocation.files.foreach { f =>
+            schema.files.foreach { f =>
               println(s"File: " + f.name)
               println(f.contents)
               println("")

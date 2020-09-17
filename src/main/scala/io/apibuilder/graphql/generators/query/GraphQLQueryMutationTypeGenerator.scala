@@ -6,11 +6,11 @@ import io.apibuilder.graphql.generators.schema.ApiBuilderTypeToGraphQLConverter
 import io.apibuilder.graphql.schema.{GraphQLIntent, GraphQLQueryMutationType, GraphQLType}
 import io.apibuilder.graphql.util.{MultiServiceView, Text}
 import io.apibuilder.spec.v0.models._
-import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
+import io.apibuilder.validation.{AnyType, ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
 
 case class GraphQLQueryMutation(
   intent: GraphQLIntent,
-  resourceType: String,
+  resourceType: AnyType,
   code: String,
 ) {
   private[this] val suffix: String = intent match {
@@ -18,7 +18,7 @@ case class GraphQLQueryMutation(
     case GraphQLIntent.Mutation => "Mutations"
   }
 
-  val name: String = Text.pascalCase(resourceType)
+  val name: String = Text.pascalCase(resourceType.name)
   val subTypeName: String = s"$name$suffix"
 }
 
@@ -70,10 +70,9 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
   }
 
   private[this] def toComment(op: GraphQLOperation): String = {
-    val name = helper.resolveType(op.service.service, op.resource) match {
-      case None => s"Service ${op.service.name}"
-      case Some(t: ApiBuilderType) => s"Resource ${t.qualified}"
-      case Some(t: ScalarType) => s"Scalar ${t.name}"
+    val name = op.resource.`type` match {
+      case t: ApiBuilderType => s"Resource ${t.qualified}"
+      case t: ScalarType => s"Scalar ${t.name}"
     }
     Seq(
       name,

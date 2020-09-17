@@ -1,47 +1,12 @@
 type Query {
-  B2bCreditMemo: B2bCreditMemoQueries
-  IoFlowExperienceV0ModelsOrderSummaryLineItem: IoFlowExperienceV0ModelsOrderSummaryLineItemQueries
-  V2Checkout: V2CheckoutQueries
-  PublicKey: PublicKeyQueries
-  ConsumerInvoice: ConsumerInvoiceQueries
   B2bInvoice: B2bInvoiceQueries
-  IoFlowCommonV0ModelsOrganization: IoFlowCommonV0ModelsOrganizationQueries
+  OrderSummaryLineItem: OrderSummaryLineItemQueries
+  Organization: OrganizationQueries
+  Checkout: CheckoutQueries
   CreditMemo: CreditMemoQueries
-}
-
-type B2bCreditMemoQueries {
-  # Resource io.flow.consumer.invoice.v0.models.b2b_credit_memo
-  # Operation 'GET /:organization/b2b/credit/memos' response '200'
-  # Response 200 [b2b_credit_memo]
-  b2bCreditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bCreditMemo!]
-}
-
-type IoFlowExperienceV0ModelsOrderSummaryLineItemQueries {
-  # Resource io.flow.experience.v0.models.order_summary_line_item
-  # Operation 'GET /lines/:id' response '200'
-  # Response 200 io.flow.experience.v0.models.order_summary_line_item
-  line(id: String!): OrderSummaryLineItem
-}
-
-type V2CheckoutQueries {
-  # Service checkout-backend
-  # Operation 'GET /v2/checkouts/:id' response '200'
-  # Response 200 checkout
-  checkout(id: String!): Checkout
-}
-
-type PublicKeyQueries {
-  # Resource io.flow.payment.v0.models.public_key
-  # Operation 'GET /:organization/encryption/keys/latest' response '200'
-  # Response 200 public_key
-  publicKey(organization: String!): PublicKey
-}
-
-type ConsumerInvoiceQueries {
-  # Resource io.flow.consumer.invoice.v0.models.consumer_invoice
-  # Operation 'GET /:organization/consumer/invoices' response '200'
-  # Response 200 [consumer_invoice]
-  consumerInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [ConsumerInvoice!]
+  PublicKey: PublicKeyQueries
+  B2bCreditMemo: B2bCreditMemoQueries
+  ConsumerInvoice: ConsumerInvoiceQueries
 }
 
 type B2bInvoiceQueries {
@@ -51,7 +16,14 @@ type B2bInvoiceQueries {
   b2bInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bInvoice!]
 }
 
-type IoFlowCommonV0ModelsOrganizationQueries {
+type OrderSummaryLineItemQueries {
+  # Resource io.flow.experience.v0.models.order_summary_line_item
+  # Operation 'GET /lines/:id' response '200'
+  # Response 200 io.flow.experience.v0.models.order_summary_line_item
+  line(id: String!): OrderSummaryLineItem
+}
+
+type OrganizationQueries {
   # Resource io.flow.common.v0.models.organization
   # Operation 'GET /organizations' response '200'
   # Response 200 [io.flow.common.v0.models.organization]
@@ -62,6 +34,13 @@ type IoFlowCommonV0ModelsOrganizationQueries {
   organization(organizationId: String!): Organization
 }
 
+type CheckoutQueries {
+  # Resource io.flow.checkout.backend.v0.models.checkout
+  # Operation 'GET /v2/checkouts/:id' response '200'
+  # Response 200 checkout
+  checkout(id: String!): Checkout
+}
+
 type CreditMemoQueries {
   # Resource io.flow.consumer.invoice.v0.models.credit_memo
   # Operation 'GET /:organization/credit/memos' response '200'
@@ -69,51 +48,72 @@ type CreditMemoQueries {
   creditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [CreditMemo!]
 }
 
-type Mutation {
-  IoFlowExperienceV0ModelsOrderSummaryLineItem: IoFlowExperienceV0ModelsOrderSummaryLineItemMutations
-  V2Checkout: V2CheckoutMutations
-  IoFlowCommonV0ModelsOrganization: IoFlowCommonV0ModelsOrganizationMutations
+type PublicKeyQueries {
+  # Resource io.flow.payment.v0.models.public_key
+  # Operation 'GET /:organization/encryption/keys/latest' response '200'
+  # Response 200 public_key
+  publicKey(organization: String!): PublicKey
 }
 
-type IoFlowExperienceV0ModelsOrderSummaryLineItemMutations {
-  # Service checkout-backend
+type B2bCreditMemoQueries {
+  # Resource io.flow.consumer.invoice.v0.models.b2b_credit_memo
+  # Operation 'GET /:organization/b2b/credit/memos' response '200'
+  # Response 200 [b2b_credit_memo]
+  b2bCreditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bCreditMemo!]
+}
+
+type ConsumerInvoiceQueries {
+  # Resource io.flow.consumer.invoice.v0.models.consumer_invoice
+  # Operation 'GET /:organization/consumer/invoices' response '200'
+  # Response 200 [consumer_invoice]
+  consumerInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [ConsumerInvoice!]
+}
+
+type Mutation {
+  OrderSummaryLineItemInput: OrderSummaryLineItemInputMutations
+  OrganizationInput: OrganizationInputMutations
+  CheckoutInput: CheckoutInputMutations
+}
+
+type OrderSummaryLineItemInputMutations {
+  # Resource io.flow.experience.v0.models.order_summary_line_item_input
   # Operation 'PUT /lines/:id' response '200'
   # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
   updateLine(id: String!, body: CheckoutLineFormInput!): OrderSummaryLineItem
-  # Service checkout-backend
+  # Resource io.flow.experience.v0.models.order_summary_line_item_input
   # Operation 'DELETE /lines/:id' response '204'
   # Response 204 unit
   deleteLine(id: String!): Unit
 }
 
-type V2CheckoutMutations {
-  # Service checkout-backend
-  # Operation 'POST /v2/checkouts/session/:session_id' response '200'
-  # Response 200 checkout_input
-  createCheckoutBySessionId(sessionId: String!): Checkout
-  # Service checkout-backend
-  # Operation 'POST /v2/checkouts/:id/lines' response '200'
-  # Response 200 checkout_input
-  createCheckoutLine(id: String!, body: CheckoutLineFormInput!): Checkout
-  # Service checkout-backend
-  # Operation 'PUT /v2/checkouts/:id/lines' response '200'
-  # Response 200 checkout_input
-  upsertCheckoutLines(id: String!, body: CheckoutLinesFormInput!): Checkout
-}
-
-type IoFlowCommonV0ModelsOrganizationMutations {
-  # Service organization
+type OrganizationInputMutations {
+  # Resource io.flow.common.v0.models.organization_input
   # Operation 'POST /organizations' response '201'
   # Response 201 io.flow.common.v0.models.organization_input
   createOrganization(body: OrganizationFormInput!): Organization
-  # Service organization
+  # Resource io.flow.common.v0.models.organization_input
   # Operation 'PUT /organizations/:organization_id' response '200'
   # Response 200 io.flow.common.v0.models.organization_input
   updateOrganization(organizationId: String!, body: OrganizationPutFormInput!): Organization
-  # Service organization
+  # Resource io.flow.common.v0.models.organization_input
   # Operation 'DELETE /organizations/:organization_id' response '204'
   # Response 204 unit
   deleteOrganization(organizationId: String!): Unit
+}
+
+type CheckoutInputMutations {
+  # Resource io.flow.checkout.backend.v0.models.checkout_input
+  # Operation 'POST /v2/checkouts/session/:session_id' response '200'
+  # Response 200 checkout_input
+  createCheckoutBySessionId(sessionId: String!): Checkout
+  # Resource io.flow.checkout.backend.v0.models.checkout_input
+  # Operation 'POST /v2/checkouts/:id/lines' response '200'
+  # Response 200 checkout_input
+  createCheckoutLine(id: String!, body: CheckoutLineFormInput!): Checkout
+  # Resource io.flow.checkout.backend.v0.models.checkout_input
+  # Operation 'PUT /v2/checkouts/:id/lines' response '200'
+  # Response 200 checkout_input
+  upsertCheckoutLines(id: String!, body: CheckoutLinesFormInput!): Checkout
 }
 
 scalar DateIso8601
@@ -550,17 +550,6 @@ type PublicKey {
   id: ID!
 }
 
-# io.flow.checkout.backend.v0.models.checkout_line_form
-type CheckoutLineForm {
-  itemNumber: String!
-  quantity: Int
-}
-
-# io.flow.checkout.backend.v0.models.checkout_lines_form
-type CheckoutLinesForm {
-  lines: [CheckoutLineForm!]!
-}
-
 # io.flow.checkout.backend.v0.models.checkout_error
 type CheckoutError {
   code: CheckoutErrorCode!
@@ -574,6 +563,17 @@ type Checkout {
   organization: OrganizationSummary!
   order: OrderSummary
   errors: [CheckoutError!]
+}
+
+# io.flow.checkout.backend.v0.models.checkout_line_form
+type CheckoutLineForm {
+  itemNumber: String!
+  quantity: Int
+}
+
+# io.flow.checkout.backend.v0.models.checkout_lines_form
+type CheckoutLinesForm {
+  lines: [CheckoutLineForm!]!
 }
 
 # io.flow.checkout.common.v0.models.checkout_redirect
@@ -977,17 +977,6 @@ input PublicKeyInput {
   id: ID!
 }
 
-# added automatically from io.flow.checkout.backend.v0.models.checkout_line_form
-input CheckoutLineFormInput {
-  itemNumber: String!
-  quantity: Int
-}
-
-# added automatically from io.flow.checkout.backend.v0.models.checkout_lines_form
-input CheckoutLinesFormInput {
-  lines: [CheckoutLineFormInput!]!
-}
-
 # added automatically from io.flow.checkout.backend.v0.models.checkout_error
 input CheckoutErrorInput {
   code: CheckoutErrorCode!
@@ -1001,6 +990,17 @@ input CheckoutInput {
   organization: OrganizationSummaryInput!
   order: OrderSummaryInput
   errors: [CheckoutErrorInput!]
+}
+
+# added automatically from io.flow.checkout.backend.v0.models.checkout_line_form
+input CheckoutLineFormInput {
+  itemNumber: String!
+  quantity: Int
+}
+
+# added automatically from io.flow.checkout.backend.v0.models.checkout_lines_form
+input CheckoutLinesFormInput {
+  lines: [CheckoutLineFormInput!]!
 }
 
 # added automatically from io.flow.checkout.common.v0.models.checkout_redirect

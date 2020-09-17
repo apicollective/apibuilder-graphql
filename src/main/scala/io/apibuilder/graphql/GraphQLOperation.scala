@@ -131,9 +131,6 @@ object GraphQLOperation {
     InternalResource(
       resource,
       ms.findType(service.namespace, resource.`type`).getOrElse {
-        ms.allTypes.sortBy(_.name).foreach { t =>
-          println(s" - ${t.qualified}")
-        }
         sys.error(s"Failed to resolve resource type '${resource.`type`}'")
       }
     )

@@ -405,13 +405,6 @@ export const models = new Models([
   new ModelData("PublicKey", [
     field("id", "id", "String", "scalar")
   ]),
-  new ModelData("CheckoutLineForm", [
-    field("itemNumber", "item_number", "String", "scalar"),
-    field("quantity", "quantity", "Int", "scalar")
-  ]),
-  new ModelData("CheckoutLinesForm", [
-    field("lines", "lines", "CheckoutLineForm", "array")
-  ]),
   new ModelData("CheckoutError", [
     field("code", "code", "CheckoutErrorCode", "enum"),
     field("messages", "messages", "String", "array"),
@@ -422,6 +415,13 @@ export const models = new Models([
     field("organization", "organization", "OrganizationSummary", "type"),
     field("order", "order", "OrderSummary", "type"),
     field("errors", "errors", "CheckoutError", "array")
+  ]),
+  new ModelData("CheckoutLineForm", [
+    field("itemNumber", "item_number", "String", "scalar"),
+    field("quantity", "quantity", "Int", "scalar")
+  ]),
+  new ModelData("CheckoutLinesForm", [
+    field("lines", "lines", "CheckoutLineForm", "array")
   ]),
   new ModelData("CheckoutRedirect", [
     field("method", "method", "CheckoutRedirectMethod", "enum"),
@@ -737,13 +737,6 @@ export const models = new Models([
   new ModelData("PublicKeyInput", [
     field("id", "id", "String", "scalar")
   ]),
-  new ModelData("CheckoutLineFormInput", [
-    field("itemNumber", "item_number", "String", "scalar"),
-    field("quantity", "quantity", "Int", "scalar")
-  ]),
-  new ModelData("CheckoutLinesFormInput", [
-    field("lines", "lines", "CheckoutLineFormInput", "array")
-  ]),
   new ModelData("CheckoutErrorInput", [
     field("code", "code", "CheckoutErrorCode", "enum"),
     field("messages", "messages", "String", "array"),
@@ -754,6 +747,13 @@ export const models = new Models([
     field("organization", "organization", "OrganizationSummaryInput", "input"),
     field("order", "order", "OrderSummaryInput", "input"),
     field("errors", "errors", "CheckoutErrorInput", "array")
+  ]),
+  new ModelData("CheckoutLineFormInput", [
+    field("itemNumber", "item_number", "String", "scalar"),
+    field("quantity", "quantity", "Int", "scalar")
+  ]),
+  new ModelData("CheckoutLinesFormInput", [
+    field("lines", "lines", "CheckoutLineFormInput", "array")
   ]),
   new ModelData("CheckoutRedirectInput", [
     field("method", "method", "CheckoutRedirectMethod", "enum"),

@@ -11,7 +11,8 @@ object GraphQLIntentRewriter {
 
   def rewrite(multiService: MultiService, intent: GraphQLIntent): MultiService = {
     List(
-      RenameTypes, ReduceTypes
+      RenameTypes,
+      ReduceTypes,
     ).foldLeft(multiService) { case (ms, rewriter) =>
       rewriter.rewrite(ms, intent)
     }

@@ -81,23 +81,19 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
       )
     }
 
-    /*
     "no parameters" in {
-      gen(
+      verify(
+        "getUsersNoParameters",
         responseType = "[user]",
-      ) must equal(
-        "users: [User!]"
       )
     }
 
     "array parameter" in {
-      param(
+      verifyParam(
+        "getUsersArrayParameter",
         makeParameter("id", "[string]", required = false)
-      ) must equal(
-        "users(id: [String!]): [User!]"
       )
     }
-    */
 
     "camelCase" in {
       verifyParam(

@@ -14,7 +14,7 @@ trait CodeGenTestHelpers {
     val expectedPath = resolvePath(fileName)
     val expected = readFile(expectedPath).trim
     if (expected != actual.trim) {
-      val tmpPath = expectedPath.getAbsolutePath + ".actual"
+      val tmpPath = expectedPath.getAbsolutePath // + ".actual"
       writeToFile(tmpPath, actual.trim)
       sys.error(
         s"Generated code does not match expected code in file ${expectedPath}:" +
@@ -40,6 +40,9 @@ trait CodeGenTestHelpers {
     val pwd = "pwd".!!.trim
     val localPath = s"$codeGenTestHelpersDir/$filename"
     val f = new JFile(s"$pwd/src/test/resources/$localPath")
+    if (!f.exists()) {
+      s"touch ${f.getAbsolutePath}".!
+    }
     if (!f.exists()) {
       sys.error(s"Could not find file $localPath. Expected it at ${f.getAbsolutePath}")
     }

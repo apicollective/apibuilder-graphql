@@ -9,26 +9,26 @@ import org.scalatest.wordspec.AnyWordSpec
 
 class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers with GraphQLApiBuilderServiceHelpers {
 
-  def gen(service: Service): Option[String] = {
+  def gen(service: Service): String = {
     gen(makeMultiService(service))
   }
 
-  def gen(multiService: MultiService): Option[String] = {
-    GraphQLQueryMutationTypeGenerator(multiService).generate(GraphQLIntent.Query).map(stripComments)
+  def gen(multiService: MultiService): String = {
+    stripComments(
+      GraphQLQueryMutationTypeGenerator(multiService).generate(GraphQLIntent.Query).get.formatted
+    )
   }
 
   private[this] def gen(
     responseType: String = "user",
     parameters: Seq[Parameter] = Nil,
   ): String = {
-    val c = gen(
+    gen(
       userService(
         responseType = responseType,
         parameters = parameters,
       )
-    ).getOrElse("")
-    println(s"Generated:\n$c\n\n")
-    c
+    )
   }
 
   private[this] def stripComments(value: String): String = {
@@ -96,7 +96,12 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers wi
       param(
         makeParameter("user_id", "string", required = false)
       ) must equal(
-        "users(userId: String): [User!]"
+        Seq(
+          """
+            |type Users {
+            |  findAll(userId: String): [User!]
+            |}""".stripMargin
+        )
       )
     }
 

@@ -3,29 +3,54 @@ package io.apibuilder.graphql.generators.query
 import apibuilder.ApiBuilderHelperImpl
 import io.apibuilder.graphql.GraphQLOperation
 import io.apibuilder.graphql.generators.schema.ApiBuilderTypeToGraphQLConverter
-import io.apibuilder.graphql.schema.GraphQLIntent
+import io.apibuilder.graphql.schema.{GraphQLIntent, GraphQLQueryMutationType, GraphQLType}
 import io.apibuilder.graphql.util.{MultiServiceView, Text}
 import io.apibuilder.spec.v0.models._
 import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
+
+case class GraphQLQueryMutation(
+  intent: GraphQLIntent,
+  resourceType: ApiBuilderType,
+  code: String,
+) {
+  private[this] val suffix: String = intent match {
+    case GraphQLIntent.Query => "Queries"
+    case GraphQLIntent.Mutation => "Mutations"
+  }
+
+  val name: String = Text.pascalCase(resourceType.name)
+  val subTypeName: String = s"$name$suffix"
+}
 
 case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends ParameterHelpers {
 
   private[this] val helper = ApiBuilderHelperImpl(multiService)
 
-  def generate(intent: GraphQLIntent): Option[String] = {
-    generate(
-      GraphQLOperation.all(multiService, intent).filter(_.methodIntent == intent)
-    )
-  }
-
-  private[this] def generate(operations: Seq[GraphQLOperation]): Option[String] = {
-    operations.map(generate).toList match {
+  def generate(intent: GraphQLIntent): Option[GraphQLQueryMutationType] = {
+    generateOperations(intent).toList match {
       case Nil => None
-      case clauses => Some(clauses.mkString("\n\n"))
+      case ops => Some(
+        intent match {
+          case GraphQLIntent.Query => GraphQLType.Query(ops)
+          case GraphQLIntent.Mutation => GraphQLType.Mutation(ops)
+        }
+      )
     }
   }
 
-  private[this] def generate(op: GraphQLOperation): String = {
+  private[this] def generateOperations(intent: GraphQLIntent): Seq[GraphQLQueryMutation] = {
+    GraphQLOperation.all(multiService, intent)
+      .filter(_.methodIntent == intent)
+      .groupBy(_.resource.`type`).map { case (resourceType, resourceOperations) =>
+      GraphQLQueryMutation(
+        intent,
+        resourceType,
+        resourceOperations.map(generateOperations).mkString("\n"),
+      )
+    }.toSeq
+  }
+
+  private[this] def generateOperations(op: GraphQLOperation): String = {
     val converter = ApiBuilderTypeToGraphQLConverter(
       multiService,
       op.graphQLIntent,
@@ -45,13 +70,8 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
   }
 
   private[this] def toComment(op: GraphQLOperation): String = {
-    val name = helper.resolveType(op.service.service, op.resource) match {
-      case None => s"Service ${op.service.name}"
-      case Some(t: ApiBuilderType) => s"Resource ${t.qualified}"
-      case Some(t: ScalarType) => s"Scalar ${t.name}"
-    }
     Seq(
-      s"$name ${op.resource.path.getOrElse("N/A")}",
+      s"Resource ${op.resource.`type`.qualified} ${op.resource.resource.path.getOrElse("N/A")}",
       op.description,
       s"Response ${toText(op.response.code)} ${op.response.`type`}",
     ).map { p => s"# $p" }.mkString("\n")

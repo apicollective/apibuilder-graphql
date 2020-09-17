@@ -5,11 +5,6 @@ import io.apibuilder.graphql.schema.GraphQLIntent
 import io.apibuilder.spec.v0.models._
 import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService}
 
-case class InternalResource(
-  resource: Resource,
-  `type`: ApiBuilderType,
-)
-
 /**
  * Represents an ApiBuilder operation that has a graphql attribute specified
  */
@@ -17,7 +12,7 @@ case class GraphQLOperation(
   multiService: MultiService,
   service: ApiBuilderService,
   graphQLIntent: GraphQLIntent,
-  resource: InternalResource,
+  resource: Resource,
   originalOperation: Operation,
   response: Response,
   attribute: GraphQLAttribute,
@@ -107,21 +102,19 @@ object GraphQLOperation {
   def all(ms: MultiService, intent: GraphQLIntent): Seq[GraphQLOperation] = {
     ms.services().flatMap { service =>
       service.service.resources.flatMap { resource =>
-        ms.findType(service.namespace, resource.`type`).toSeq.collect { case t: ApiBuilderType => t }.flatMap { resourceType =>
-          resource.operations.flatMap { operation =>
-            GraphQLAttribute.fromOperation(operation).toSeq.flatMap { attribute =>
-              assertHas2xxResponse(operation)
-              operation.responses.map { response =>
-                GraphQLOperation(
-                  multiService = ms,
-                  service = service,
-                  graphQLIntent = intent,
-                  resource = InternalResource(resource, resourceType),
-                  originalOperation = operation,
-                  attribute = attribute,
-                  response = response,
-                )
-              }
+        resource.operations.flatMap { operation =>
+          GraphQLAttribute.fromOperation(operation).toSeq.flatMap { attribute =>
+            assertHas2xxResponse(operation)
+            operation.responses.map { response =>
+              GraphQLOperation(
+                multiService = ms,
+                service = service,
+                graphQLIntent = intent,
+                resource = resource,
+                originalOperation = operation,
+                attribute = attribute,
+                response = response,
+              )
             }
           }
         }

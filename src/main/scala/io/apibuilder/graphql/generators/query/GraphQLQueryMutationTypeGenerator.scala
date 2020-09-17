@@ -10,7 +10,7 @@ import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService
 
 case class GraphQLQueryMutation(
   intent: GraphQLIntent,
-  resourceType: ApiBuilderType,
+  resourceType: String,
   code: String,
 ) {
   private[this] val suffix: String = intent match {
@@ -18,7 +18,7 @@ case class GraphQLQueryMutation(
     case GraphQLIntent.Mutation => "Mutations"
   }
 
-  val name: String = Text.pascalCase(resourceType.name)
+  val name: String = Text.pascalCase(resourceType)
   val subTypeName: String = s"$name$suffix"
 }
 
@@ -70,8 +70,13 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
   }
 
   private[this] def toComment(op: GraphQLOperation): String = {
+    val name = helper.resolveType(op.service.service, op.resource) match {
+      case None => s"Service ${op.service.name}"
+      case Some(t: ApiBuilderType) => s"Resource ${t.qualified}"
+      case Some(t: ScalarType) => s"Scalar ${t.name}"
+    }
     Seq(
-      s"Resource ${op.resource.`type`.qualified} ${op.resource.resource.path.getOrElse("N/A")}",
+      name,
       op.description,
       s"Response ${toText(op.response.code)} ${op.response.`type`}",
     ).map { p => s"# $p" }.mkString("\n")

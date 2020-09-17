@@ -13,6 +13,10 @@ trait FileHelpers {
     ()
   }
 
+  def writeToFile(path: JFile, contents: String): Unit = {
+    writeToFile(path.getAbsolutePath, contents)
+  }
+
   def readFile(path: String): String = {
     readFile(new JFile(path))
   }

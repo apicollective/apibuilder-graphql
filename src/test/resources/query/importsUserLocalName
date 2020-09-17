@@ -1,9 +1,9 @@
 type Query {
-  User: UserQueries
+  IoFlowCommonV0ModelsUser: IoFlowCommonV0ModelsUserQueries
 }
 
-type UserQueries {
-  # Resource io.flow.common.v0.models.user N/A
+type IoFlowCommonV0ModelsUserQueries {
+  # Resource io.flow.common.v0.models.user
   # Operation 'GET /users' response '200'
   # Response 200 io.flow.common.v0.models.user
   users: User

@@ -5,6 +5,6 @@ type Query {
 type UserQueries {
   # Resource test.models.user N/A
   # Operation 'GET /users' response '200'
-  # Response 200 [user]
-  users: [User!]
+  # Response 200 user
+  users(organization: String!): User
 }

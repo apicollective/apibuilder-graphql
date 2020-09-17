@@ -1,0 +1,10 @@
+type Query {
+  User: UserQueries
+}
+
+type UserQueries {
+  # Resource io.flow.common.v0.models.user N/A
+  # Operation 'GET /users' response '200'
+  # Response 200 io.flow.common.v0.models.user
+  users: User
+}

@@ -6,5 +6,5 @@ type UserQueries {
   # Resource test.models.user N/A
   # Operation 'GET /users' response '200'
   # Response 200 [user]
-  users: [User!]
+  users(sort: String! = "\"-created_at\""): [User!]
 }

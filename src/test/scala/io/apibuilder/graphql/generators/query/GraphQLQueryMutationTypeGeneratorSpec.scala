@@ -2,7 +2,7 @@ package io.apibuilder.graphql.generators.query
 
 import io.apibuilder.graphql.generators.helpers.{CodeGenTestHelpers, GraphQLApiBuilderServiceHelpers}
 import io.apibuilder.graphql.schema.GraphQLIntent
-import io.apibuilder.spec.v0.models.{Method, Parameter, Service}
+import io.apibuilder.spec.v0.models.{Method, Parameter, ParameterLocation, Service}
 import io.apibuilder.validation.MultiService
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -48,6 +48,7 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
   ): Service = {
     val userStatus = makeEnum("user_status")
     makeService(
+      namespace = "test",
       models = Seq(userModel),
       enums = Seq(userStatus),
       resources = Seq(
@@ -101,116 +102,102 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
         makeParameter("user_id", "string", required = false)
       )
     }
-  }
-}
 
-    /*
     "default" must {
       "integer" must {
         "optional" in {
-          param(
+          verifyParam(
+            "getUsersDefaultIntegerOptional",
             makeParameter("limit", "integer", required = false, default = Some("25"))
-          ) must equal(
-            "users(limit: Int = 25): [User!]"
           )
         }
 
         "required" in {
-          param(
+          verifyParam(
+            "getUsersDefaultRequired",
             makeParameter("limit", "integer", required = true, default = Some("25"))
-          ) must equal(
-            "users(limit: Int! = 25): [User!]"
           )
         }
 
         "string" must {
           "optional" in {
-            param(
+            verifyParam(
+              "getUsersDefaultStringOptional",
               makeParameter("sort", "string", required = false, default = Some("-created_at"))
-            ) must equal(
-              """users(sort: String = "-created_at"): [User!]"""
             )
           }
 
           "required" in {
-            param(
+            verifyParam(
+              "getUsersDefaultStringRequired",
               makeParameter("sort", "string", required = true, default = Some("-created_at"))
-            ) must equal(
-              """users(sort: String! = "-created_at"): [User!]"""
             )
           }
 
           "quotes" in {
-            param(
+            verifyParam(
+              "getUsersDefaultStringQuotes",
               makeParameter("sort", "string", required = true, default = Some("\"-created_at\""))
-            ) must equal(
-              """users(sort: String! = "\"-created_at\""): [User!]"""
             )
           }
         }
       }
 
       "enum" in {
-        param(
+        verifyParam(
+          "getUsersEnum",
           makeParameter("status", "user_status", required = false, default = Some("active"))
-        ) must equal(
-          """users(status: UserStatus = ACTIVE): [User!]"""
         )
       }
     }
 
     "optional" in {
-      param(
+      verifyParam(
+        "getUsersOptional",
         makeParameter("email", "string", required = false)
-      ) must equal(
-        "users(email: String): [User!]"
       )
     }
 
     "required" in {
-      param(
+      verifyParam(
+        "getUsersRequired",
         makeParameter("email", "string", required = true)
-      ) must equal(
-        "users(email: String!): [User!]"
       )
     }
 
     "path" must {
       "includes only path parameters in name of method" in {
-        gen(
+        verify(
+          "getUsersPathIncludesOnlyPathParametersInNameOfMethod",
           parameters = Seq(
             makeParameter("id", "string", location = ParameterLocation.Path),
             makeParameter("status", "string", location = ParameterLocation.Query),
           )
-        ) must equal(
-          "users(id: String!, status: String!): User"
         )
       }
 
       "organization path parameter moved to the name of the method" in {
-        gen(
+        verify(
+          "getUsersPathOrganizationPathParameterMovedToTheNameOfTheMethod",
           parameters = Seq(
             makeParameter("organization", "string", location = ParameterLocation.Path),
           )
-        ) must equal(
-          "users(organization: String!): User"
         )
       }
 
       "partner path parameter moved to the name of the method" in {
-        gen(
+        verify(
+          "getUsersPathPartnerPathParameterMovedToTheNameOfTheMethod",
           parameters = Seq(
             makeParameter("partner", "string", location = ParameterLocation.Path),
           )
-        ) must equal(
-          "users(partner: String!): User"
         )
       }
     }
   }
 
   "imports" must {
-    "uses local name" in {
+    "use local name" in {
       val common = makeService(
         name = "common",
         namespace = "io.flow.common.v0",
@@ -223,12 +210,11 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
         imports = Seq(makeImport(common)),
       )
 
-      gen(
+      verify(
+        "importsUserLocalName",
         makeMultiService(Seq(common, userSvc)),
-      ) must equal(
-        Some("users: User")
       )
     }
   }
 }
-*/
+

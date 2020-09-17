@@ -3,7 +3,7 @@ type Query {
 }
 
 type UserQueries {
-  # Resource test.apicollective.a13056032-90bb-445d-b7ed-21e50d18b1e2.models.user N/A
+  # Resource test.models.user N/A
   # Operation 'GET /users' response '200'
   # Response 200 [user]
   users(userId: String): [User!]

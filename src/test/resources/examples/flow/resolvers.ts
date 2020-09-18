@@ -12,19 +12,16 @@ export default {
       dataSources.api.delete(`/organizations/${organizationId}`, {}),
 
     updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
+
+    updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
       dataSources.api.put(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
 
     deleteLine: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.delete(`/lines/${id}`, {}),
 
     createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {}),
-
-    createCheckoutLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/v2/checkouts/${id}/lines`, inputMapper("CheckoutLineFormInput", body)),
-
-    upsertCheckoutLines: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.put(`/v2/checkouts/${id}/lines`, inputMapper("CheckoutLinesFormInput", body))
+      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
   },
 
   ConsumerInvoiceLineDiscriminator: {
@@ -67,14 +64,14 @@ export default {
     PRODUCTION: "production"
   },
 
-  ConsumerInvoiceDocumentType: {
-    PDF: "pdf"
-  },
-
   ConsumerInvoiceCustomerType: {
     BUSINESS_EU_VERIFIED: "business_eu_verified",
     BUSINESS_NON_VERIFIED: "business_non_verified",
     INDIVIDUAL: "individual"
+  },
+
+  ConsumerInvoiceDocumentType: {
+    PDF: "pdf"
   },
 
   ConsumerInvoiceStatus: {

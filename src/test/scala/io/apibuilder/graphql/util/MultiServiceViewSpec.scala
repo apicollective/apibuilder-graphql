@@ -15,7 +15,7 @@ class MultiServiceViewSpec extends AnyWordSpec with Matchers
 
   "mutation enums do not have an _input suffix" in {
     val enum = makeValidEnum("environment")
-    val model = makeModel()
+    val model = makeModel(name = "example")
     val ms = makeMultiService(
       makeService(
         enums = Seq(enum),

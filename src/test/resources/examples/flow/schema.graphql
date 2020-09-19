@@ -1,12 +1,33 @@
 type Query {
+  B2bCreditMemo: B2bCreditMemoQueries
+  B2bInvoice: B2bInvoiceQueries
+  OrderSummaryLineItem: OrderSummaryLineItemQueries
   PublicKey: PublicKeyQueries
   ConsumerInvoice: ConsumerInvoiceQueries
-  B2bCreditMemo: B2bCreditMemoQueries
-  Checkout: CheckoutQueries
-  OrderSummaryLineItem: OrderSummaryLineItemQueries
   Organization: OrganizationQueries
-  B2bInvoice: B2bInvoiceQueries
   CreditMemo: CreditMemoQueries
+  Checkout: CheckoutQueries
+}
+
+type B2bCreditMemoQueries {
+  # Resource io.flow.consumer.invoice.v0.models.b2b_credit_memo
+  # Operation 'GET /:organization/b2b/credit/memos' response '200'
+  # Response 200 [b2b_credit_memo]
+  b2bCreditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bCreditMemo!]
+}
+
+type B2bInvoiceQueries {
+  # Resource io.flow.consumer.invoice.v0.models.b2b_invoice
+  # Operation 'GET /:organization/b2b/invoices' response '200'
+  # Response 200 [b2b_invoice]
+  b2bInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bInvoice!]
+}
+
+type OrderSummaryLineItemQueries {
+  # Resource io.flow.experience.v0.models.order_summary_line_item
+  # Operation 'GET /lines/:id' response '200'
+  # Response 200 io.flow.experience.v0.models.order_summary_line_item
+  line(id: String!): OrderSummaryLineItem
 }
 
 type PublicKeyQueries {
@@ -23,27 +44,6 @@ type ConsumerInvoiceQueries {
   consumerInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [ConsumerInvoice!]
 }
 
-type B2bCreditMemoQueries {
-  # Resource io.flow.consumer.invoice.v0.models.b2b_credit_memo
-  # Operation 'GET /:organization/b2b/credit/memos' response '200'
-  # Response 200 [b2b_credit_memo]
-  b2bCreditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bCreditMemo!]
-}
-
-type CheckoutQueries {
-  # Resource io.flow.checkout.backend.v0.models.checkout
-  # Operation 'GET /v2/checkouts/:id' response '200'
-  # Response 200 checkout
-  checkout(id: String!): Checkout
-}
-
-type OrderSummaryLineItemQueries {
-  # Resource io.flow.experience.v0.models.order_summary_line_item
-  # Operation 'GET /lines/:id' response '200'
-  # Response 200 io.flow.experience.v0.models.order_summary_line_item
-  line(id: String!): OrderSummaryLineItem
-}
-
 type OrganizationQueries {
   # Resource io.flow.common.v0.models.organization
   # Operation 'GET /organizations' response '200'
@@ -55,13 +55,6 @@ type OrganizationQueries {
   organization(organizationId: String!): Organization
 }
 
-type B2bInvoiceQueries {
-  # Resource io.flow.consumer.invoice.v0.models.b2b_invoice
-  # Operation 'GET /:organization/b2b/invoices' response '200'
-  # Response 200 [b2b_invoice]
-  b2bInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bInvoice!]
-}
-
 type CreditMemoQueries {
   # Resource io.flow.consumer.invoice.v0.models.credit_memo
   # Operation 'GET /:organization/credit/memos' response '200'
@@ -69,10 +62,39 @@ type CreditMemoQueries {
   creditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [CreditMemo!]
 }
 
+type CheckoutQueries {
+  # Resource io.flow.checkout.backend.v0.models.checkout
+  # Operation 'GET /v2/checkouts/:id' response '200'
+  # Response 200 checkout
+  checkout(id: String!): Checkout
+}
+
 type Mutation {
-  OrganizationInput: OrganizationInputMutations
-  CheckoutInput: CheckoutInputMutations
   OrderSummaryLineItemInput: OrderSummaryLineItemInputMutations
+  CheckoutInput: CheckoutInputMutations
+  OrganizationInput: OrganizationInputMutations
+}
+
+type OrderSummaryLineItemInputMutations {
+  # Resource io.flow.experience.v0.models.order_summary_line_item_input
+  # Operation 'POST /lines/:id' response '200'
+  # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
+  createLine(id: String!, body: CheckoutLineFormInput!): OrderSummaryLineItem
+  # Resource io.flow.experience.v0.models.order_summary_line_item_input
+  # Operation 'PUT /lines/:id' response '200'
+  # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
+  updateLine(id: String!, body: CheckoutLineFormInput!): OrderSummaryLineItem
+  # Resource io.flow.experience.v0.models.order_summary_line_item_input
+  # Operation 'DELETE /lines/:id' response '204'
+  # Response 204 unit
+  deleteLine(id: String!): Unit
+}
+
+type CheckoutInputMutations {
+  # Resource io.flow.checkout.backend.v0.models.checkout_input
+  # Operation 'POST /v2/checkouts/session/:session_id' response '200'
+  # Response 200 checkout_input
+  createCheckoutBySessionId(sessionId: String!): Checkout
 }
 
 type OrganizationInputMutations {
@@ -88,28 +110,6 @@ type OrganizationInputMutations {
   # Operation 'DELETE /organizations/:organization_id' response '204'
   # Response 204 unit
   deleteOrganization(organizationId: String!): Unit
-}
-
-type CheckoutInputMutations {
-  # Resource io.flow.checkout.backend.v0.models.checkout_input
-  # Operation 'POST /v2/checkouts/session/:session_id' response '200'
-  # Response 200 checkout_input
-  createCheckoutBySessionId(sessionId: String!): Checkout
-}
-
-type OrderSummaryLineItemInputMutations {
-  # Resource io.flow.experience.v0.models.order_summary_line_item_input
-  # Operation 'POST /lines/:id' response '200'
-  # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
-  updateLine(id: String!, body: CheckoutLineFormInput!): OrderSummaryLineItem
-  # Resource io.flow.experience.v0.models.order_summary_line_item_input
-  # Operation 'PUT /lines/:id' response '200'
-  # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
-  updateLine(id: String!, body: CheckoutLineFormInput!): OrderSummaryLineItem
-  # Resource io.flow.experience.v0.models.order_summary_line_item_input
-  # Operation 'DELETE /lines/:id' response '204'
-  # Response 204 unit
-  deleteLine(id: String!): Unit
 }
 
 scalar DateIso8601
@@ -178,63 +178,6 @@ enum CheckoutRedirectMethod {
   POST
 }
 
-# io.flow.common.v0.models.price
-type Price {
-  amount: Float!
-  currency: String!
-  label: String!
-}
-
-# io.flow.common.v0.models.contact
-type Contact {
-  name: Name!
-  company: String
-  email: String
-  phone: String
-}
-
-# io.flow.common.v0.models.address
-type Address {
-  text: String
-  streets: [String!]
-  streetNumber: String
-  city: String
-  province: String
-  postal: String
-  country: String
-  latitude: String
-  longitude: String
-}
-
-# io.flow.common.v0.models.organization_summary
-type OrganizationSummary {
-  id: ID!
-  name: String!
-}
-
-# io.flow.common.v0.models.merchant_of_record_entity_registration
-type MerchantOfRecordEntityRegistration {
-  number: String!
-  country: String!
-}
-
-# io.flow.common.v0.models.money
-type Money {
-  amount: Float!
-  currency: String!
-}
-
-# io.flow.common.v0.models.billing_address
-type BillingAddress {
-  name: Name
-  streets: [String!]
-  city: String
-  province: String
-  postal: String
-  country: String
-  company: String
-}
-
 # io.flow.common.v0.models.organization_defaults
 type OrganizationDefaults {
   country: String!
@@ -263,15 +206,34 @@ type ItemReference {
   number: String!
 }
 
-# io.flow.common.v0.models.name
-type Name {
-  first: String
-  last: String
+# io.flow.common.v0.models.money
+type Money {
+  amount: Float!
+  currency: String!
 }
 
-# io.flow.common.v0.models.organization_reference
-type OrganizationReference {
-  id: ID!
+# io.flow.common.v0.models.billing_address
+type BillingAddress {
+  name: Name
+  streets: [String!]
+  city: String
+  province: String
+  postal: String
+  country: String
+  company: String
+}
+
+# io.flow.common.v0.models.address
+type Address {
+  text: String
+  streets: [String!]
+  streetNumber: String
+  city: String
+  province: String
+  postal: String
+  country: String
+  latitude: String
+  longitude: String
 }
 
 # io.flow.common.v0.models.organization
@@ -284,39 +246,75 @@ type Organization {
   createdAt: DateTimeIso8601
 }
 
-# io.flow.consumer.invoice.v0.models.b2b_credit_memo
-type B2bCreditMemo {
+# io.flow.common.v0.models.organization_summary
+type OrganizationSummary {
   id: ID!
-  number: String!
-  buyer: MerchantOfRecordEntity!
-  seller: MerchantOfRecordEntity!
-  status: ConsumerInvoiceStatus!
-  date: DateTimeIso8601!
-  key: String!
-  invoice: B2bInvoiceReference!
-  lines: [ConsumerInvoiceLine!]!
-  documents: [ConsumerInvoiceDocument!]!
-  attributes: Object!
+  name: String!
 }
 
-# io.flow.consumer.invoice.v0.models.b2b_invoice
-type B2bInvoice {
-  id: ID!
+# io.flow.common.v0.models.merchant_of_record_entity_registration
+type MerchantOfRecordEntityRegistration {
   number: String!
-  buyer: MerchantOfRecordEntity!
-  seller: MerchantOfRecordEntity!
+  country: String!
+}
+
+# io.flow.common.v0.models.price
+type Price {
+  amount: Float!
+  currency: String!
+  label: String!
+}
+
+# io.flow.common.v0.models.name
+type Name {
+  first: String
+  last: String
+}
+
+# io.flow.common.v0.models.organization_reference
+type OrganizationReference {
+  id: ID!
+}
+
+# io.flow.common.v0.models.contact
+type Contact {
+  name: Name!
+  company: String
+  email: String
+  phone: String
+}
+
+# io.flow.consumer.invoice.v0.models.consumer_invoice_levy
+type ConsumerInvoiceLevy {
+  rate: Decimal!
+  value: Price!
+}
+
+# io.flow.consumer.invoice.v0.models.consumer_invoice_line_item
+type ConsumerInvoiceLineItem {
+  item: ItemReference!
+  description: String!
+  quantity: Long!
+  unitPrice: Price!
+  unitDiscount: Price
+  unitTax: ConsumerInvoiceLevy
+  unitDuty: ConsumerInvoiceLevy
+}
+
+# io.flow.consumer.invoice.v0.models.credit_memo
+type CreditMemo {
+  id: ID!
+  number: String
   status: ConsumerInvoiceStatus!
   date: DateTimeIso8601!
   key: String!
-  order: ConsumerInvoiceOrderSummary!
-  economicTitleLocation: EconomicTitleLocation!
-  center: ConsumerInvoiceCenterReference
-  destination: OrderAddress
-  tax: Money!
+  invoice: ConsumerInvoiceReference!
+  entity: MerchantOfRecordEntity!
+  payments: [ConsumerInvoicePayment!]!
   lines: [ConsumerInvoiceLine!]!
   documents: [ConsumerInvoiceDocument!]!
   attributes: Object!
-  estimatedDeliveryDate: DateTimeIso8601
+  taxRegistration: TaxRegistration
 }
 
 # io.flow.consumer.invoice.v0.models.consumer_invoice
@@ -340,24 +338,11 @@ type ConsumerInvoice {
   estimatedDeliveryDate: DateTimeIso8601
 }
 
-# io.flow.consumer.invoice.v0.models.consumer_invoice_document
-type ConsumerInvoiceDocument {
-  type: ConsumerInvoiceDocumentType!
-  language: String!
-  url: String!
-}
-
 # io.flow.consumer.invoice.v0.models.consumer_invoice_order_summary
 type ConsumerInvoiceOrderSummary {
   id: ID!
   number: String!
   submittedAt: DateTimeIso8601!
-}
-
-# io.flow.consumer.invoice.v0.models.consumer_invoice_levy
-type ConsumerInvoiceLevy {
-  rate: Decimal!
-  value: Price!
 }
 
 # io.flow.consumer.invoice.v0.models.consumer_invoice_line_shipping
@@ -368,20 +353,24 @@ type ConsumerInvoiceLineShipping {
   duty: ConsumerInvoiceLevy
 }
 
-# io.flow.consumer.invoice.v0.models.credit_memo
-type CreditMemo {
+# io.flow.consumer.invoice.v0.models.b2b_invoice
+type B2bInvoice {
   id: ID!
-  number: String
+  number: String!
+  buyer: MerchantOfRecordEntity!
+  seller: MerchantOfRecordEntity!
   status: ConsumerInvoiceStatus!
   date: DateTimeIso8601!
   key: String!
-  invoice: ConsumerInvoiceReference!
-  entity: MerchantOfRecordEntity!
-  payments: [ConsumerInvoicePayment!]!
+  order: ConsumerInvoiceOrderSummary!
+  economicTitleLocation: EconomicTitleLocation!
+  center: ConsumerInvoiceCenterReference
+  destination: OrderAddress
+  tax: Money!
   lines: [ConsumerInvoiceLine!]!
   documents: [ConsumerInvoiceDocument!]!
   attributes: Object!
-  taxRegistration: TaxRegistration
+  estimatedDeliveryDate: DateTimeIso8601
 }
 
 # io.flow.consumer.invoice.v0.models.b2b_invoice_reference
@@ -391,11 +380,33 @@ type B2bInvoiceReference {
   number: String!
 }
 
+# io.flow.consumer.invoice.v0.models.b2b_credit_memo
+type B2bCreditMemo {
+  id: ID!
+  number: String!
+  buyer: MerchantOfRecordEntity!
+  seller: MerchantOfRecordEntity!
+  status: ConsumerInvoiceStatus!
+  date: DateTimeIso8601!
+  key: String!
+  invoice: B2bInvoiceReference!
+  lines: [ConsumerInvoiceLine!]!
+  documents: [ConsumerInvoiceDocument!]!
+  attributes: Object!
+}
+
 # io.flow.consumer.invoice.v0.models.consumer_invoice_reference
 type ConsumerInvoiceReference {
   id: ID!
   key: String!
   number: String!
+}
+
+# io.flow.consumer.invoice.v0.models.consumer_invoice_document
+type ConsumerInvoiceDocument {
+  type: ConsumerInvoiceDocumentType!
+  language: String!
+  url: String!
 }
 
 # io.flow.consumer.invoice.v0.models.consumer_invoice_center_reference
@@ -411,17 +422,6 @@ type ConsumerInvoiceLineDiscount {
   price: Price!
 }
 
-# io.flow.consumer.invoice.v0.models.consumer_invoice_line_item
-type ConsumerInvoiceLineItem {
-  item: ItemReference!
-  description: String!
-  quantity: Long!
-  unitPrice: Price!
-  unitDiscount: Price
-  unitTax: ConsumerInvoiceLevy
-  unitDuty: ConsumerInvoiceLevy
-}
-
 # io.flow.consumer.invoice.v0.models.consumer_invoice_payment
 type ConsumerInvoicePayment {
   date: DateTimeIso8601!
@@ -430,15 +430,36 @@ type ConsumerInvoicePayment {
   billingAddress: BillingAddress
 }
 
-# io.flow.experience.v0.models.order_summary_line_item
-type OrderSummaryLineItem {
-  item: OrderSummaryItem!
-  quantity: Long!
-  discount: Price
-  tax: OrderSummaryLevy
-  duty: OrderSummaryLevy
-  total: Price!
-  priceAttributes: Object!
+# io.flow.experience.v0.models.order_address
+type OrderAddress {
+  text: String
+  streets: [String!]
+  city: String
+  province: String
+  postal: String
+  country: String
+  latitude: String
+  longitude: String
+  contact: Contact
+}
+
+# io.flow.experience.v0.models.order_summary_image
+type OrderSummaryImage {
+  url: String!
+}
+
+# io.flow.experience.v0.models.checkout_item_content_attribute
+type CheckoutItemContentAttribute {
+  key: String!
+  name: String!
+  value: String!
+}
+
+# io.flow.experience.v0.models.order_summary_levy
+type OrderSummaryLevy {
+  rate: Decimal!
+  rateLabel: String
+  value: Price!
 }
 
 # io.flow.experience.v0.models.order_summary_item
@@ -455,11 +476,23 @@ type OrderSummaryItem {
   priceAttributes: Object!
 }
 
-# io.flow.experience.v0.models.order_summary_levy
-type OrderSummaryLevy {
-  rate: Decimal!
+# io.flow.experience.v0.models.order_summary_price_detail
+type OrderSummaryPriceDetail {
+  price: Price!
+  name: String
+  rate: Decimal
   rateLabel: String
-  value: Price!
+}
+
+# io.flow.experience.v0.models.order_summary_line_item
+type OrderSummaryLineItem {
+  item: OrderSummaryItem!
+  quantity: Long!
+  discount: Price
+  tax: OrderSummaryLevy
+  duty: OrderSummaryLevy
+  total: Price!
+  priceAttributes: Object!
 }
 
 # io.flow.experience.v0.models.order_summary
@@ -476,39 +509,6 @@ type OrderSummary {
   total: OrderSummaryPriceDetail!
   lines: [OrderSummaryLineItem!]!
   identifiers: Object
-}
-
-# io.flow.experience.v0.models.checkout_item_content_attribute
-type CheckoutItemContentAttribute {
-  key: String!
-  name: String!
-  value: String!
-}
-
-# io.flow.experience.v0.models.order_summary_image
-type OrderSummaryImage {
-  url: String!
-}
-
-# io.flow.experience.v0.models.order_summary_price_detail
-type OrderSummaryPriceDetail {
-  price: Price!
-  name: String
-  rate: Decimal
-  rateLabel: String
-}
-
-# io.flow.experience.v0.models.order_address
-type OrderAddress {
-  text: String
-  streets: [String!]
-  city: String
-  province: String
-  postal: String
-  country: String
-  latitude: String
-  longitude: String
-  contact: Contact
 }
 
 # io.flow.harmonization.v0.models.tax_registration
@@ -554,18 +554,18 @@ type Checkout {
   errors: [CheckoutError!]
 }
 
-# io.flow.checkout.backend.v0.models.checkout_error
-type CheckoutError {
-  code: CheckoutErrorCode!
-  messages: [String!]!
-  redirect: CheckoutRedirect
-}
-
 # io.flow.checkout.backend.v0.models.checkout_line_form
 type CheckoutLineForm {
   checkoutId: String!
   itemNumber: String!
   quantity: Long!
+}
+
+# io.flow.checkout.backend.v0.models.checkout_error
+type CheckoutError {
+  code: CheckoutErrorCode!
+  messages: [String!]!
+  redirect: CheckoutRedirect
 }
 
 # io.flow.checkout.common.v0.models.checkout_redirect
@@ -583,63 +583,6 @@ enum ConsumerInvoiceLineDiscriminator {
   ITEM
   DISCOUNT
   SHIPPING
-}
-
-# added automatically from io.flow.common.v0.models.price
-input PriceInput {
-  amount: Float!
-  currency: String!
-  label: String!
-}
-
-# added automatically from io.flow.common.v0.models.contact
-input ContactInput {
-  name: NameInput!
-  company: String
-  email: String
-  phone: String
-}
-
-# added automatically from io.flow.common.v0.models.address
-input AddressInput {
-  text: String
-  streets: [String!]
-  streetNumber: String
-  city: String
-  province: String
-  postal: String
-  country: String
-  latitude: String
-  longitude: String
-}
-
-# added automatically from io.flow.common.v0.models.organization_summary
-input OrganizationSummaryInput {
-  id: ID!
-  name: String!
-}
-
-# added automatically from io.flow.common.v0.models.merchant_of_record_entity_registration
-input MerchantOfRecordEntityRegistrationInput {
-  number: String!
-  country: String!
-}
-
-# added automatically from io.flow.common.v0.models.money
-input MoneyInput {
-  amount: Float!
-  currency: String!
-}
-
-# added automatically from io.flow.common.v0.models.billing_address
-input BillingAddressInput {
-  name: NameInput
-  streets: [String!]
-  city: String
-  province: String
-  postal: String
-  country: String
-  company: String
 }
 
 # added automatically from io.flow.common.v0.models.organization_defaults
@@ -670,15 +613,34 @@ input ItemReferenceInput {
   number: String!
 }
 
-# added automatically from io.flow.common.v0.models.name
-input NameInput {
-  first: String
-  last: String
+# added automatically from io.flow.common.v0.models.money
+input MoneyInput {
+  amount: Float!
+  currency: String!
 }
 
-# added automatically from io.flow.common.v0.models.organization_reference
-input OrganizationReferenceInput {
-  id: ID!
+# added automatically from io.flow.common.v0.models.billing_address
+input BillingAddressInput {
+  name: NameInput
+  streets: [String!]
+  city: String
+  province: String
+  postal: String
+  country: String
+  company: String
+}
+
+# added automatically from io.flow.common.v0.models.address
+input AddressInput {
+  text: String
+  streets: [String!]
+  streetNumber: String
+  city: String
+  province: String
+  postal: String
+  country: String
+  latitude: String
+  longitude: String
 }
 
 # added automatically from io.flow.common.v0.models.organization
@@ -691,39 +653,75 @@ input OrganizationInput {
   createdAt: DateTimeIso8601
 }
 
-# added automatically from io.flow.consumer.invoice.v0.models.b2b_credit_memo
-input B2bCreditMemoInput {
+# added automatically from io.flow.common.v0.models.organization_summary
+input OrganizationSummaryInput {
   id: ID!
-  number: String!
-  buyer: MerchantOfRecordEntityInput!
-  seller: MerchantOfRecordEntityInput!
-  status: ConsumerInvoiceStatus!
-  date: DateTimeIso8601!
-  key: String!
-  invoice: B2bInvoiceReferenceInput!
-  lines: [ConsumerInvoiceLineInput!]!
-  documents: [ConsumerInvoiceDocumentInput!]!
-  attributes: Object!
+  name: String!
 }
 
-# added automatically from io.flow.consumer.invoice.v0.models.b2b_invoice
-input B2bInvoiceInput {
-  id: ID!
+# added automatically from io.flow.common.v0.models.merchant_of_record_entity_registration
+input MerchantOfRecordEntityRegistrationInput {
   number: String!
-  buyer: MerchantOfRecordEntityInput!
-  seller: MerchantOfRecordEntityInput!
+  country: String!
+}
+
+# added automatically from io.flow.common.v0.models.price
+input PriceInput {
+  amount: Float!
+  currency: String!
+  label: String!
+}
+
+# added automatically from io.flow.common.v0.models.name
+input NameInput {
+  first: String
+  last: String
+}
+
+# added automatically from io.flow.common.v0.models.organization_reference
+input OrganizationReferenceInput {
+  id: ID!
+}
+
+# added automatically from io.flow.common.v0.models.contact
+input ContactInput {
+  name: NameInput!
+  company: String
+  email: String
+  phone: String
+}
+
+# added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_levy
+input ConsumerInvoiceLevyInput {
+  rate: Decimal!
+  value: PriceInput!
+}
+
+# added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_line_item
+input ConsumerInvoiceLineItemInput {
+  item: ItemReferenceInput!
+  description: String!
+  quantity: Long!
+  unitPrice: PriceInput!
+  unitDiscount: PriceInput
+  unitTax: ConsumerInvoiceLevyInput
+  unitDuty: ConsumerInvoiceLevyInput
+}
+
+# added automatically from io.flow.consumer.invoice.v0.models.credit_memo
+input CreditMemoInput {
+  id: ID!
+  number: String
   status: ConsumerInvoiceStatus!
   date: DateTimeIso8601!
   key: String!
-  order: ConsumerInvoiceOrderSummaryInput!
-  economicTitleLocation: EconomicTitleLocation!
-  center: ConsumerInvoiceCenterReferenceInput
-  destination: OrderAddressInput
-  tax: MoneyInput!
+  invoice: ConsumerInvoiceReferenceInput!
+  entity: MerchantOfRecordEntityInput!
+  payments: [ConsumerInvoicePaymentInput!]!
   lines: [ConsumerInvoiceLineInput!]!
   documents: [ConsumerInvoiceDocumentInput!]!
   attributes: Object!
-  estimatedDeliveryDate: DateTimeIso8601
+  taxRegistration: TaxRegistrationInput
 }
 
 # added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice
@@ -747,24 +745,11 @@ input ConsumerInvoiceInput {
   estimatedDeliveryDate: DateTimeIso8601
 }
 
-# added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_document
-input ConsumerInvoiceDocumentInput {
-  type: ConsumerInvoiceDocumentType!
-  language: String!
-  url: String!
-}
-
 # added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_order_summary
 input ConsumerInvoiceOrderSummaryInput {
   id: ID!
   number: String!
   submittedAt: DateTimeIso8601!
-}
-
-# added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_levy
-input ConsumerInvoiceLevyInput {
-  rate: Decimal!
-  value: PriceInput!
 }
 
 # added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_line_shipping
@@ -775,20 +760,24 @@ input ConsumerInvoiceLineShippingInput {
   duty: ConsumerInvoiceLevyInput
 }
 
-# added automatically from io.flow.consumer.invoice.v0.models.credit_memo
-input CreditMemoInput {
+# added automatically from io.flow.consumer.invoice.v0.models.b2b_invoice
+input B2bInvoiceInput {
   id: ID!
-  number: String
+  number: String!
+  buyer: MerchantOfRecordEntityInput!
+  seller: MerchantOfRecordEntityInput!
   status: ConsumerInvoiceStatus!
   date: DateTimeIso8601!
   key: String!
-  invoice: ConsumerInvoiceReferenceInput!
-  entity: MerchantOfRecordEntityInput!
-  payments: [ConsumerInvoicePaymentInput!]!
+  order: ConsumerInvoiceOrderSummaryInput!
+  economicTitleLocation: EconomicTitleLocation!
+  center: ConsumerInvoiceCenterReferenceInput
+  destination: OrderAddressInput
+  tax: MoneyInput!
   lines: [ConsumerInvoiceLineInput!]!
   documents: [ConsumerInvoiceDocumentInput!]!
   attributes: Object!
-  taxRegistration: TaxRegistrationInput
+  estimatedDeliveryDate: DateTimeIso8601
 }
 
 # added automatically from io.flow.consumer.invoice.v0.models.b2b_invoice_reference
@@ -798,11 +787,33 @@ input B2bInvoiceReferenceInput {
   number: String!
 }
 
+# added automatically from io.flow.consumer.invoice.v0.models.b2b_credit_memo
+input B2bCreditMemoInput {
+  id: ID!
+  number: String!
+  buyer: MerchantOfRecordEntityInput!
+  seller: MerchantOfRecordEntityInput!
+  status: ConsumerInvoiceStatus!
+  date: DateTimeIso8601!
+  key: String!
+  invoice: B2bInvoiceReferenceInput!
+  lines: [ConsumerInvoiceLineInput!]!
+  documents: [ConsumerInvoiceDocumentInput!]!
+  attributes: Object!
+}
+
 # added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_reference
 input ConsumerInvoiceReferenceInput {
   id: ID!
   key: String!
   number: String!
+}
+
+# added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_document
+input ConsumerInvoiceDocumentInput {
+  type: ConsumerInvoiceDocumentType!
+  language: String!
+  url: String!
 }
 
 # added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_center_reference
@@ -816,17 +827,6 @@ input ConsumerInvoiceCenterReferenceInput {
 # added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_line_discount
 input ConsumerInvoiceLineDiscountInput {
   price: PriceInput!
-}
-
-# added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_line_item
-input ConsumerInvoiceLineItemInput {
-  item: ItemReferenceInput!
-  description: String!
-  quantity: Long!
-  unitPrice: PriceInput!
-  unitDiscount: PriceInput
-  unitTax: ConsumerInvoiceLevyInput
-  unitDuty: ConsumerInvoiceLevyInput
 }
 
 # added automatically from io.flow.consumer.invoice.v0.models.consumer_invoice_payment
@@ -853,15 +853,36 @@ input ConsumerInvoiceLineInput {
   duty: ConsumerInvoiceLevyInput
 }
 
-# added automatically from io.flow.experience.v0.models.order_summary_line_item
-input OrderSummaryLineItemInput {
-  item: OrderSummaryItemInput!
-  quantity: Long!
-  discount: PriceInput
-  tax: OrderSummaryLevyInput
-  duty: OrderSummaryLevyInput
-  total: PriceInput!
-  priceAttributes: Object!
+# added automatically from io.flow.experience.v0.models.order_address
+input OrderAddressInput {
+  text: String
+  streets: [String!]
+  city: String
+  province: String
+  postal: String
+  country: String
+  latitude: String
+  longitude: String
+  contact: ContactInput
+}
+
+# added automatically from io.flow.experience.v0.models.order_summary_image
+input OrderSummaryImageInput {
+  url: String!
+}
+
+# added automatically from io.flow.experience.v0.models.checkout_item_content_attribute
+input CheckoutItemContentAttributeInput {
+  key: String!
+  name: String!
+  value: String!
+}
+
+# added automatically from io.flow.experience.v0.models.order_summary_levy
+input OrderSummaryLevyInput {
+  rate: Decimal!
+  rateLabel: String
+  value: PriceInput!
 }
 
 # added automatically from io.flow.experience.v0.models.order_summary_item
@@ -878,11 +899,23 @@ input OrderSummaryItemInput {
   priceAttributes: Object!
 }
 
-# added automatically from io.flow.experience.v0.models.order_summary_levy
-input OrderSummaryLevyInput {
-  rate: Decimal!
+# added automatically from io.flow.experience.v0.models.order_summary_price_detail
+input OrderSummaryPriceDetailInput {
+  price: PriceInput!
+  name: String
+  rate: Decimal
   rateLabel: String
-  value: PriceInput!
+}
+
+# added automatically from io.flow.experience.v0.models.order_summary_line_item
+input OrderSummaryLineItemInput {
+  item: OrderSummaryItemInput!
+  quantity: Long!
+  discount: PriceInput
+  tax: OrderSummaryLevyInput
+  duty: OrderSummaryLevyInput
+  total: PriceInput!
+  priceAttributes: Object!
 }
 
 # added automatically from io.flow.experience.v0.models.order_summary
@@ -899,39 +932,6 @@ input OrderSummaryInput {
   total: OrderSummaryPriceDetailInput!
   lines: [OrderSummaryLineItemInput!]!
   identifiers: Object
-}
-
-# added automatically from io.flow.experience.v0.models.checkout_item_content_attribute
-input CheckoutItemContentAttributeInput {
-  key: String!
-  name: String!
-  value: String!
-}
-
-# added automatically from io.flow.experience.v0.models.order_summary_image
-input OrderSummaryImageInput {
-  url: String!
-}
-
-# added automatically from io.flow.experience.v0.models.order_summary_price_detail
-input OrderSummaryPriceDetailInput {
-  price: PriceInput!
-  name: String
-  rate: Decimal
-  rateLabel: String
-}
-
-# added automatically from io.flow.experience.v0.models.order_address
-input OrderAddressInput {
-  text: String
-  streets: [String!]
-  city: String
-  province: String
-  postal: String
-  country: String
-  latitude: String
-  longitude: String
-  contact: ContactInput
 }
 
 # added automatically from io.flow.harmonization.v0.models.tax_registration
@@ -977,18 +977,18 @@ input CheckoutInput {
   errors: [CheckoutErrorInput!]
 }
 
-# added automatically from io.flow.checkout.backend.v0.models.checkout_error
-input CheckoutErrorInput {
-  code: CheckoutErrorCode!
-  messages: [String!]!
-  redirect: CheckoutRedirectInput
-}
-
 # added automatically from io.flow.checkout.backend.v0.models.checkout_line_form
 input CheckoutLineFormInput {
   checkoutId: String!
   itemNumber: String!
   quantity: Long!
+}
+
+# added automatically from io.flow.checkout.backend.v0.models.checkout_error
+input CheckoutErrorInput {
+  code: CheckoutErrorCode!
+  messages: [String!]!
+  redirect: CheckoutRedirectInput
 }
 
 # added automatically from io.flow.checkout.common.v0.models.checkout_redirect

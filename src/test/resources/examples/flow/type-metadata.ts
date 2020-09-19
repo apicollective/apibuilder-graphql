@@ -115,49 +115,6 @@ export const models = new Models([
     new EnumValue("GET", "get"),
     new EnumValue("POST", "post")
   ]),
-  new ModelData("Price", [
-    field("amount", "amount", "Float", "scalar"),
-    field("currency", "currency", "String", "scalar"),
-    field("label", "label", "String", "scalar")
-  ]),
-  new ModelData("Contact", [
-    field("name", "name", "Name", "type"),
-    field("company", "company", "String", "scalar"),
-    field("email", "email", "String", "scalar"),
-    field("phone", "phone", "String", "scalar")
-  ]),
-  new ModelData("Address", [
-    field("text", "text", "String", "scalar"),
-    field("streets", "streets", "String", "array"),
-    field("streetNumber", "street_number", "String", "scalar"),
-    field("city", "city", "String", "scalar"),
-    field("province", "province", "String", "scalar"),
-    field("postal", "postal", "String", "scalar"),
-    field("country", "country", "String", "scalar"),
-    field("latitude", "latitude", "String", "scalar"),
-    field("longitude", "longitude", "String", "scalar")
-  ]),
-  new ModelData("OrganizationSummary", [
-    field("id", "id", "String", "scalar"),
-    field("name", "name", "String", "scalar")
-  ]),
-  new ModelData("MerchantOfRecordEntityRegistration", [
-    field("number", "number", "String", "scalar"),
-    field("country", "country", "String", "scalar")
-  ]),
-  new ModelData("Money", [
-    field("amount", "amount", "Float", "scalar"),
-    field("currency", "currency", "String", "scalar")
-  ]),
-  new ModelData("BillingAddress", [
-    field("name", "name", "Name", "type"),
-    field("streets", "streets", "String", "array"),
-    field("city", "city", "String", "scalar"),
-    field("province", "province", "String", "scalar"),
-    field("postal", "postal", "String", "scalar"),
-    field("country", "country", "String", "scalar"),
-    field("company", "company", "String", "scalar")
-  ]),
   new ModelData("OrganizationDefaults", [
     field("country", "country", "String", "scalar"),
     field("baseCurrency", "base_currency", "String", "scalar"),
@@ -180,12 +137,29 @@ export const models = new Models([
   new ModelData("ItemReference", [
     field("number", "number", "String", "scalar")
   ]),
-  new ModelData("Name", [
-    field("first", "first", "String", "scalar"),
-    field("last", "last", "String", "scalar")
+  new ModelData("Money", [
+    field("amount", "amount", "Float", "scalar"),
+    field("currency", "currency", "String", "scalar")
   ]),
-  new ModelData("OrganizationReference", [
-    field("id", "id", "String", "scalar")
+  new ModelData("BillingAddress", [
+    field("name", "name", "Name", "type"),
+    field("streets", "streets", "String", "array"),
+    field("city", "city", "String", "scalar"),
+    field("province", "province", "String", "scalar"),
+    field("postal", "postal", "String", "scalar"),
+    field("country", "country", "String", "scalar"),
+    field("company", "company", "String", "scalar")
+  ]),
+  new ModelData("Address", [
+    field("text", "text", "String", "scalar"),
+    field("streets", "streets", "String", "array"),
+    field("streetNumber", "street_number", "String", "scalar"),
+    field("city", "city", "String", "scalar"),
+    field("province", "province", "String", "scalar"),
+    field("postal", "postal", "String", "scalar"),
+    field("country", "country", "String", "scalar"),
+    field("latitude", "latitude", "String", "scalar"),
+    field("longitude", "longitude", "String", "scalar")
   ]),
   new ModelData("Organization", [
     field("id", "id", "String", "scalar"),
@@ -195,36 +169,58 @@ export const models = new Models([
     field("defaults", "defaults", "OrganizationDefaults", "type"),
     field("createdAt", "created_at", "DateTimeIso8601", "scalar")
   ]),
-  new ModelData("B2bCreditMemo", [
+  new ModelData("OrganizationSummary", [
     field("id", "id", "String", "scalar"),
-    field("number", "number", "String", "scalar"),
-    field("buyer", "buyer", "MerchantOfRecordEntity", "type"),
-    field("seller", "seller", "MerchantOfRecordEntity", "type"),
-    field("status", "status", "ConsumerInvoiceStatus", "enum"),
-    field("date", "date", "DateTimeIso8601", "scalar"),
-    field("key", "key", "String", "scalar"),
-    field("invoice", "invoice", "B2bInvoiceReference", "type"),
-    field("lines", "lines", "ConsumerInvoiceLine", "array"),
-    field("documents", "documents", "ConsumerInvoiceDocument", "array"),
-    field("attributes", "attributes", "Object", "scalar")
+    field("name", "name", "String", "scalar")
   ]),
-  new ModelData("B2bInvoice", [
+  new ModelData("MerchantOfRecordEntityRegistration", [
+    field("number", "number", "String", "scalar"),
+    field("country", "country", "String", "scalar")
+  ]),
+  new ModelData("Price", [
+    field("amount", "amount", "Float", "scalar"),
+    field("currency", "currency", "String", "scalar"),
+    field("label", "label", "String", "scalar")
+  ]),
+  new ModelData("Name", [
+    field("first", "first", "String", "scalar"),
+    field("last", "last", "String", "scalar")
+  ]),
+  new ModelData("OrganizationReference", [
+    field("id", "id", "String", "scalar")
+  ]),
+  new ModelData("Contact", [
+    field("name", "name", "Name", "type"),
+    field("company", "company", "String", "scalar"),
+    field("email", "email", "String", "scalar"),
+    field("phone", "phone", "String", "scalar")
+  ]),
+  new ModelData("ConsumerInvoiceLevy", [
+    field("rate", "rate", "Decimal", "scalar"),
+    field("value", "value", "Price", "type")
+  ]),
+  new ModelData("ConsumerInvoiceLineItem", [
+    field("item", "item", "ItemReference", "type"),
+    field("description", "description", "String", "scalar"),
+    field("quantity", "quantity", "Long", "scalar"),
+    field("unitPrice", "unit_price", "Price", "type"),
+    field("unitDiscount", "unit_discount", "Price", "type"),
+    field("unitTax", "unit_tax", "ConsumerInvoiceLevy", "type"),
+    field("unitDuty", "unit_duty", "ConsumerInvoiceLevy", "type")
+  ]),
+  new ModelData("CreditMemo", [
     field("id", "id", "String", "scalar"),
     field("number", "number", "String", "scalar"),
-    field("buyer", "buyer", "MerchantOfRecordEntity", "type"),
-    field("seller", "seller", "MerchantOfRecordEntity", "type"),
     field("status", "status", "ConsumerInvoiceStatus", "enum"),
     field("date", "date", "DateTimeIso8601", "scalar"),
     field("key", "key", "String", "scalar"),
-    field("order", "order", "ConsumerInvoiceOrderSummary", "type"),
-    field("economicTitleLocation", "economic_title_location", "EconomicTitleLocation", "enum"),
-    field("center", "center", "ConsumerInvoiceCenterReference", "type"),
-    field("destination", "destination", "OrderAddress", "type"),
-    field("tax", "tax", "Money", "type"),
+    field("invoice", "invoice", "ConsumerInvoiceReference", "type"),
+    field("entity", "entity", "MerchantOfRecordEntity", "type"),
+    field("payments", "payments", "ConsumerInvoicePayment", "array"),
     field("lines", "lines", "ConsumerInvoiceLine", "array"),
     field("documents", "documents", "ConsumerInvoiceDocument", "array"),
     field("attributes", "attributes", "Object", "scalar"),
-    field("estimatedDeliveryDate", "estimated_delivery_date", "DateTimeIso8601", "scalar")
+    field("taxRegistration", "tax_registration", "TaxRegistration", "type")
   ]),
   new ModelData("ConsumerInvoice", [
     field("id", "id", "String", "scalar"),
@@ -245,19 +241,10 @@ export const models = new Models([
     field("customerType", "customer_type", "ConsumerInvoiceCustomerType", "enum"),
     field("estimatedDeliveryDate", "estimated_delivery_date", "DateTimeIso8601", "scalar")
   ]),
-  new ModelData("ConsumerInvoiceDocument", [
-    field("type", "type", "ConsumerInvoiceDocumentType", "enum"),
-    field("language", "language", "String", "scalar"),
-    field("url", "url", "String", "scalar")
-  ]),
   new ModelData("ConsumerInvoiceOrderSummary", [
     field("id", "id", "String", "scalar"),
     field("number", "number", "String", "scalar"),
     field("submittedAt", "submitted_at", "DateTimeIso8601", "scalar")
-  ]),
-  new ModelData("ConsumerInvoiceLevy", [
-    field("rate", "rate", "Decimal", "scalar"),
-    field("value", "value", "Price", "type")
   ]),
   new ModelData("ConsumerInvoiceLineShipping", [
     field("price", "price", "Price", "type"),
@@ -265,29 +252,51 @@ export const models = new Models([
     field("tax", "tax", "ConsumerInvoiceLevy", "type"),
     field("duty", "duty", "ConsumerInvoiceLevy", "type")
   ]),
-  new ModelData("CreditMemo", [
+  new ModelData("B2bInvoice", [
     field("id", "id", "String", "scalar"),
     field("number", "number", "String", "scalar"),
+    field("buyer", "buyer", "MerchantOfRecordEntity", "type"),
+    field("seller", "seller", "MerchantOfRecordEntity", "type"),
     field("status", "status", "ConsumerInvoiceStatus", "enum"),
     field("date", "date", "DateTimeIso8601", "scalar"),
     field("key", "key", "String", "scalar"),
-    field("invoice", "invoice", "ConsumerInvoiceReference", "type"),
-    field("entity", "entity", "MerchantOfRecordEntity", "type"),
-    field("payments", "payments", "ConsumerInvoicePayment", "array"),
+    field("order", "order", "ConsumerInvoiceOrderSummary", "type"),
+    field("economicTitleLocation", "economic_title_location", "EconomicTitleLocation", "enum"),
+    field("center", "center", "ConsumerInvoiceCenterReference", "type"),
+    field("destination", "destination", "OrderAddress", "type"),
+    field("tax", "tax", "Money", "type"),
     field("lines", "lines", "ConsumerInvoiceLine", "array"),
     field("documents", "documents", "ConsumerInvoiceDocument", "array"),
     field("attributes", "attributes", "Object", "scalar"),
-    field("taxRegistration", "tax_registration", "TaxRegistration", "type")
+    field("estimatedDeliveryDate", "estimated_delivery_date", "DateTimeIso8601", "scalar")
   ]),
   new ModelData("B2bInvoiceReference", [
     field("id", "id", "String", "scalar"),
     field("key", "key", "String", "scalar"),
     field("number", "number", "String", "scalar")
   ]),
+  new ModelData("B2bCreditMemo", [
+    field("id", "id", "String", "scalar"),
+    field("number", "number", "String", "scalar"),
+    field("buyer", "buyer", "MerchantOfRecordEntity", "type"),
+    field("seller", "seller", "MerchantOfRecordEntity", "type"),
+    field("status", "status", "ConsumerInvoiceStatus", "enum"),
+    field("date", "date", "DateTimeIso8601", "scalar"),
+    field("key", "key", "String", "scalar"),
+    field("invoice", "invoice", "B2bInvoiceReference", "type"),
+    field("lines", "lines", "ConsumerInvoiceLine", "array"),
+    field("documents", "documents", "ConsumerInvoiceDocument", "array"),
+    field("attributes", "attributes", "Object", "scalar")
+  ]),
   new ModelData("ConsumerInvoiceReference", [
     field("id", "id", "String", "scalar"),
     field("key", "key", "String", "scalar"),
     field("number", "number", "String", "scalar")
+  ]),
+  new ModelData("ConsumerInvoiceDocument", [
+    field("type", "type", "ConsumerInvoiceDocumentType", "enum"),
+    field("language", "language", "String", "scalar"),
+    field("url", "url", "String", "scalar")
   ]),
   new ModelData("ConsumerInvoiceCenterReference", [
     field("id", "id", "String", "scalar"),
@@ -298,29 +307,35 @@ export const models = new Models([
   new ModelData("ConsumerInvoiceLineDiscount", [
     field("price", "price", "Price", "type")
   ]),
-  new ModelData("ConsumerInvoiceLineItem", [
-    field("item", "item", "ItemReference", "type"),
-    field("description", "description", "String", "scalar"),
-    field("quantity", "quantity", "Long", "scalar"),
-    field("unitPrice", "unit_price", "Price", "type"),
-    field("unitDiscount", "unit_discount", "Price", "type"),
-    field("unitTax", "unit_tax", "ConsumerInvoiceLevy", "type"),
-    field("unitDuty", "unit_duty", "ConsumerInvoiceLevy", "type")
-  ]),
   new ModelData("ConsumerInvoicePayment", [
     field("date", "date", "DateTimeIso8601", "scalar"),
     field("description", "description", "String", "scalar"),
     field("value", "value", "Price", "type"),
     field("billingAddress", "billing_address", "BillingAddress", "type")
   ]),
-  new ModelData("OrderSummaryLineItem", [
-    field("item", "item", "OrderSummaryItem", "type"),
-    field("quantity", "quantity", "Long", "scalar"),
-    field("discount", "discount", "Price", "type"),
-    field("tax", "tax", "OrderSummaryLevy", "type"),
-    field("duty", "duty", "OrderSummaryLevy", "type"),
-    field("total", "total", "Price", "type"),
-    field("priceAttributes", "price_attributes", "Object", "scalar")
+  new ModelData("OrderAddress", [
+    field("text", "text", "String", "scalar"),
+    field("streets", "streets", "String", "array"),
+    field("city", "city", "String", "scalar"),
+    field("province", "province", "String", "scalar"),
+    field("postal", "postal", "String", "scalar"),
+    field("country", "country", "String", "scalar"),
+    field("latitude", "latitude", "String", "scalar"),
+    field("longitude", "longitude", "String", "scalar"),
+    field("contact", "contact", "Contact", "type")
+  ]),
+  new ModelData("OrderSummaryImage", [
+    field("url", "url", "String", "scalar")
+  ]),
+  new ModelData("CheckoutItemContentAttribute", [
+    field("key", "key", "String", "scalar"),
+    field("name", "name", "String", "scalar"),
+    field("value", "value", "String", "scalar")
+  ]),
+  new ModelData("OrderSummaryLevy", [
+    field("rate", "rate", "Decimal", "scalar"),
+    field("rateLabel", "rate_label", "String", "scalar"),
+    field("value", "value", "Price", "type")
   ]),
   new ModelData("OrderSummaryItem", [
     field("number", "number", "String", "scalar"),
@@ -334,10 +349,20 @@ export const models = new Models([
     field("duty", "duty", "OrderSummaryLevy", "type"),
     field("priceAttributes", "price_attributes", "Object", "scalar")
   ]),
-  new ModelData("OrderSummaryLevy", [
+  new ModelData("OrderSummaryPriceDetail", [
+    field("price", "price", "Price", "type"),
+    field("name", "name", "String", "scalar"),
     field("rate", "rate", "Decimal", "scalar"),
-    field("rateLabel", "rate_label", "String", "scalar"),
-    field("value", "value", "Price", "type")
+    field("rateLabel", "rate_label", "String", "scalar")
+  ]),
+  new ModelData("OrderSummaryLineItem", [
+    field("item", "item", "OrderSummaryItem", "type"),
+    field("quantity", "quantity", "Long", "scalar"),
+    field("discount", "discount", "Price", "type"),
+    field("tax", "tax", "OrderSummaryLevy", "type"),
+    field("duty", "duty", "OrderSummaryLevy", "type"),
+    field("total", "total", "Price", "type"),
+    field("priceAttributes", "price_attributes", "Object", "scalar")
   ]),
   new ModelData("OrderSummary", [
     field("number", "number", "String", "scalar"),
@@ -352,31 +377,6 @@ export const models = new Models([
     field("total", "total", "OrderSummaryPriceDetail", "type"),
     field("lines", "lines", "OrderSummaryLineItem", "array"),
     field("identifiers", "identifiers", "Object", "scalar")
-  ]),
-  new ModelData("CheckoutItemContentAttribute", [
-    field("key", "key", "String", "scalar"),
-    field("name", "name", "String", "scalar"),
-    field("value", "value", "String", "scalar")
-  ]),
-  new ModelData("OrderSummaryImage", [
-    field("url", "url", "String", "scalar")
-  ]),
-  new ModelData("OrderSummaryPriceDetail", [
-    field("price", "price", "Price", "type"),
-    field("name", "name", "String", "scalar"),
-    field("rate", "rate", "Decimal", "scalar"),
-    field("rateLabel", "rate_label", "String", "scalar")
-  ]),
-  new ModelData("OrderAddress", [
-    field("text", "text", "String", "scalar"),
-    field("streets", "streets", "String", "array"),
-    field("city", "city", "String", "scalar"),
-    field("province", "province", "String", "scalar"),
-    field("postal", "postal", "String", "scalar"),
-    field("country", "country", "String", "scalar"),
-    field("latitude", "latitude", "String", "scalar"),
-    field("longitude", "longitude", "String", "scalar"),
-    field("contact", "contact", "Contact", "type")
   ]),
   new ModelData("TaxRegistration", [
     field("id", "id", "String", "scalar"),
@@ -411,15 +411,15 @@ export const models = new Models([
     field("order", "order", "OrderSummary", "type"),
     field("errors", "errors", "CheckoutError", "array")
   ]),
-  new ModelData("CheckoutError", [
-    field("code", "code", "CheckoutErrorCode", "enum"),
-    field("messages", "messages", "String", "array"),
-    field("redirect", "redirect", "CheckoutRedirect", "type")
-  ]),
   new ModelData("CheckoutLineForm", [
     field("checkoutId", "checkout_id", "String", "scalar"),
     field("itemNumber", "item_number", "String", "scalar"),
     field("quantity", "quantity", "Long", "scalar")
+  ]),
+  new ModelData("CheckoutError", [
+    field("code", "code", "CheckoutErrorCode", "enum"),
+    field("messages", "messages", "String", "array"),
+    field("redirect", "redirect", "CheckoutRedirect", "type")
   ]),
   new ModelData("CheckoutRedirect", [
     field("method", "method", "CheckoutRedirectMethod", "enum"),
@@ -430,49 +430,6 @@ export const models = new Models([
     new EnumValue("ITEM", "item"),
     new EnumValue("DISCOUNT", "discount"),
     new EnumValue("SHIPPING", "shipping")
-  ]),
-  new ModelData("PriceInput", [
-    field("amount", "amount", "Float", "scalar"),
-    field("currency", "currency", "String", "scalar"),
-    field("label", "label", "String", "scalar")
-  ]),
-  new ModelData("ContactInput", [
-    field("name", "name", "NameInput", "input"),
-    field("company", "company", "String", "scalar"),
-    field("email", "email", "String", "scalar"),
-    field("phone", "phone", "String", "scalar")
-  ]),
-  new ModelData("AddressInput", [
-    field("text", "text", "String", "scalar"),
-    field("streets", "streets", "String", "array"),
-    field("streetNumber", "street_number", "String", "scalar"),
-    field("city", "city", "String", "scalar"),
-    field("province", "province", "String", "scalar"),
-    field("postal", "postal", "String", "scalar"),
-    field("country", "country", "String", "scalar"),
-    field("latitude", "latitude", "String", "scalar"),
-    field("longitude", "longitude", "String", "scalar")
-  ]),
-  new ModelData("OrganizationSummaryInput", [
-    field("id", "id", "String", "scalar"),
-    field("name", "name", "String", "scalar")
-  ]),
-  new ModelData("MerchantOfRecordEntityRegistrationInput", [
-    field("number", "number", "String", "scalar"),
-    field("country", "country", "String", "scalar")
-  ]),
-  new ModelData("MoneyInput", [
-    field("amount", "amount", "Float", "scalar"),
-    field("currency", "currency", "String", "scalar")
-  ]),
-  new ModelData("BillingAddressInput", [
-    field("name", "name", "NameInput", "input"),
-    field("streets", "streets", "String", "array"),
-    field("city", "city", "String", "scalar"),
-    field("province", "province", "String", "scalar"),
-    field("postal", "postal", "String", "scalar"),
-    field("country", "country", "String", "scalar"),
-    field("company", "company", "String", "scalar")
   ]),
   new ModelData("OrganizationDefaultsInput", [
     field("country", "country", "String", "scalar"),
@@ -496,12 +453,29 @@ export const models = new Models([
   new ModelData("ItemReferenceInput", [
     field("number", "number", "String", "scalar")
   ]),
-  new ModelData("NameInput", [
-    field("first", "first", "String", "scalar"),
-    field("last", "last", "String", "scalar")
+  new ModelData("MoneyInput", [
+    field("amount", "amount", "Float", "scalar"),
+    field("currency", "currency", "String", "scalar")
   ]),
-  new ModelData("OrganizationReferenceInput", [
-    field("id", "id", "String", "scalar")
+  new ModelData("BillingAddressInput", [
+    field("name", "name", "NameInput", "input"),
+    field("streets", "streets", "String", "array"),
+    field("city", "city", "String", "scalar"),
+    field("province", "province", "String", "scalar"),
+    field("postal", "postal", "String", "scalar"),
+    field("country", "country", "String", "scalar"),
+    field("company", "company", "String", "scalar")
+  ]),
+  new ModelData("AddressInput", [
+    field("text", "text", "String", "scalar"),
+    field("streets", "streets", "String", "array"),
+    field("streetNumber", "street_number", "String", "scalar"),
+    field("city", "city", "String", "scalar"),
+    field("province", "province", "String", "scalar"),
+    field("postal", "postal", "String", "scalar"),
+    field("country", "country", "String", "scalar"),
+    field("latitude", "latitude", "String", "scalar"),
+    field("longitude", "longitude", "String", "scalar")
   ]),
   new ModelData("OrganizationInput", [
     field("id", "id", "String", "scalar"),
@@ -511,36 +485,58 @@ export const models = new Models([
     field("defaults", "defaults", "OrganizationDefaultsInput", "input"),
     field("createdAt", "created_at", "DateTimeIso8601", "scalar")
   ]),
-  new ModelData("B2bCreditMemoInput", [
+  new ModelData("OrganizationSummaryInput", [
     field("id", "id", "String", "scalar"),
-    field("number", "number", "String", "scalar"),
-    field("buyer", "buyer", "MerchantOfRecordEntityInput", "input"),
-    field("seller", "seller", "MerchantOfRecordEntityInput", "input"),
-    field("status", "status", "ConsumerInvoiceStatus", "enum"),
-    field("date", "date", "DateTimeIso8601", "scalar"),
-    field("key", "key", "String", "scalar"),
-    field("invoice", "invoice", "B2bInvoiceReferenceInput", "input"),
-    field("lines", "lines", "ConsumerInvoiceLineInput", "array"),
-    field("documents", "documents", "ConsumerInvoiceDocumentInput", "array"),
-    field("attributes", "attributes", "Object", "scalar")
+    field("name", "name", "String", "scalar")
   ]),
-  new ModelData("B2bInvoiceInput", [
+  new ModelData("MerchantOfRecordEntityRegistrationInput", [
+    field("number", "number", "String", "scalar"),
+    field("country", "country", "String", "scalar")
+  ]),
+  new ModelData("PriceInput", [
+    field("amount", "amount", "Float", "scalar"),
+    field("currency", "currency", "String", "scalar"),
+    field("label", "label", "String", "scalar")
+  ]),
+  new ModelData("NameInput", [
+    field("first", "first", "String", "scalar"),
+    field("last", "last", "String", "scalar")
+  ]),
+  new ModelData("OrganizationReferenceInput", [
+    field("id", "id", "String", "scalar")
+  ]),
+  new ModelData("ContactInput", [
+    field("name", "name", "NameInput", "input"),
+    field("company", "company", "String", "scalar"),
+    field("email", "email", "String", "scalar"),
+    field("phone", "phone", "String", "scalar")
+  ]),
+  new ModelData("ConsumerInvoiceLevyInput", [
+    field("rate", "rate", "Decimal", "scalar"),
+    field("value", "value", "PriceInput", "input")
+  ]),
+  new ModelData("ConsumerInvoiceLineItemInput", [
+    field("item", "item", "ItemReferenceInput", "input"),
+    field("description", "description", "String", "scalar"),
+    field("quantity", "quantity", "Long", "scalar"),
+    field("unitPrice", "unit_price", "PriceInput", "input"),
+    field("unitDiscount", "unit_discount", "PriceInput", "input"),
+    field("unitTax", "unit_tax", "ConsumerInvoiceLevyInput", "input"),
+    field("unitDuty", "unit_duty", "ConsumerInvoiceLevyInput", "input")
+  ]),
+  new ModelData("CreditMemoInput", [
     field("id", "id", "String", "scalar"),
     field("number", "number", "String", "scalar"),
-    field("buyer", "buyer", "MerchantOfRecordEntityInput", "input"),
-    field("seller", "seller", "MerchantOfRecordEntityInput", "input"),
     field("status", "status", "ConsumerInvoiceStatus", "enum"),
     field("date", "date", "DateTimeIso8601", "scalar"),
     field("key", "key", "String", "scalar"),
-    field("order", "order", "ConsumerInvoiceOrderSummaryInput", "input"),
-    field("economicTitleLocation", "economic_title_location", "EconomicTitleLocation", "enum"),
-    field("center", "center", "ConsumerInvoiceCenterReferenceInput", "input"),
-    field("destination", "destination", "OrderAddressInput", "input"),
-    field("tax", "tax", "MoneyInput", "input"),
+    field("invoice", "invoice", "ConsumerInvoiceReferenceInput", "input"),
+    field("entity", "entity", "MerchantOfRecordEntityInput", "input"),
+    field("payments", "payments", "ConsumerInvoicePaymentInput", "array"),
     field("lines", "lines", "ConsumerInvoiceLineInput", "array"),
     field("documents", "documents", "ConsumerInvoiceDocumentInput", "array"),
     field("attributes", "attributes", "Object", "scalar"),
-    field("estimatedDeliveryDate", "estimated_delivery_date", "DateTimeIso8601", "scalar")
+    field("taxRegistration", "tax_registration", "TaxRegistrationInput", "input")
   ]),
   new ModelData("ConsumerInvoiceInput", [
     field("id", "id", "String", "scalar"),
@@ -561,19 +557,10 @@ export const models = new Models([
     field("customerType", "customer_type", "ConsumerInvoiceCustomerType", "enum"),
     field("estimatedDeliveryDate", "estimated_delivery_date", "DateTimeIso8601", "scalar")
   ]),
-  new ModelData("ConsumerInvoiceDocumentInput", [
-    field("type", "type", "ConsumerInvoiceDocumentType", "enum"),
-    field("language", "language", "String", "scalar"),
-    field("url", "url", "String", "scalar")
-  ]),
   new ModelData("ConsumerInvoiceOrderSummaryInput", [
     field("id", "id", "String", "scalar"),
     field("number", "number", "String", "scalar"),
     field("submittedAt", "submitted_at", "DateTimeIso8601", "scalar")
-  ]),
-  new ModelData("ConsumerInvoiceLevyInput", [
-    field("rate", "rate", "Decimal", "scalar"),
-    field("value", "value", "PriceInput", "input")
   ]),
   new ModelData("ConsumerInvoiceLineShippingInput", [
     field("price", "price", "PriceInput", "input"),
@@ -581,29 +568,51 @@ export const models = new Models([
     field("tax", "tax", "ConsumerInvoiceLevyInput", "input"),
     field("duty", "duty", "ConsumerInvoiceLevyInput", "input")
   ]),
-  new ModelData("CreditMemoInput", [
+  new ModelData("B2bInvoiceInput", [
     field("id", "id", "String", "scalar"),
     field("number", "number", "String", "scalar"),
+    field("buyer", "buyer", "MerchantOfRecordEntityInput", "input"),
+    field("seller", "seller", "MerchantOfRecordEntityInput", "input"),
     field("status", "status", "ConsumerInvoiceStatus", "enum"),
     field("date", "date", "DateTimeIso8601", "scalar"),
     field("key", "key", "String", "scalar"),
-    field("invoice", "invoice", "ConsumerInvoiceReferenceInput", "input"),
-    field("entity", "entity", "MerchantOfRecordEntityInput", "input"),
-    field("payments", "payments", "ConsumerInvoicePaymentInput", "array"),
+    field("order", "order", "ConsumerInvoiceOrderSummaryInput", "input"),
+    field("economicTitleLocation", "economic_title_location", "EconomicTitleLocation", "enum"),
+    field("center", "center", "ConsumerInvoiceCenterReferenceInput", "input"),
+    field("destination", "destination", "OrderAddressInput", "input"),
+    field("tax", "tax", "MoneyInput", "input"),
     field("lines", "lines", "ConsumerInvoiceLineInput", "array"),
     field("documents", "documents", "ConsumerInvoiceDocumentInput", "array"),
     field("attributes", "attributes", "Object", "scalar"),
-    field("taxRegistration", "tax_registration", "TaxRegistrationInput", "input")
+    field("estimatedDeliveryDate", "estimated_delivery_date", "DateTimeIso8601", "scalar")
   ]),
   new ModelData("B2bInvoiceReferenceInput", [
     field("id", "id", "String", "scalar"),
     field("key", "key", "String", "scalar"),
     field("number", "number", "String", "scalar")
   ]),
+  new ModelData("B2bCreditMemoInput", [
+    field("id", "id", "String", "scalar"),
+    field("number", "number", "String", "scalar"),
+    field("buyer", "buyer", "MerchantOfRecordEntityInput", "input"),
+    field("seller", "seller", "MerchantOfRecordEntityInput", "input"),
+    field("status", "status", "ConsumerInvoiceStatus", "enum"),
+    field("date", "date", "DateTimeIso8601", "scalar"),
+    field("key", "key", "String", "scalar"),
+    field("invoice", "invoice", "B2bInvoiceReferenceInput", "input"),
+    field("lines", "lines", "ConsumerInvoiceLineInput", "array"),
+    field("documents", "documents", "ConsumerInvoiceDocumentInput", "array"),
+    field("attributes", "attributes", "Object", "scalar")
+  ]),
   new ModelData("ConsumerInvoiceReferenceInput", [
     field("id", "id", "String", "scalar"),
     field("key", "key", "String", "scalar"),
     field("number", "number", "String", "scalar")
+  ]),
+  new ModelData("ConsumerInvoiceDocumentInput", [
+    field("type", "type", "ConsumerInvoiceDocumentType", "enum"),
+    field("language", "language", "String", "scalar"),
+    field("url", "url", "String", "scalar")
   ]),
   new ModelData("ConsumerInvoiceCenterReferenceInput", [
     field("id", "id", "String", "scalar"),
@@ -613,15 +622,6 @@ export const models = new Models([
   ]),
   new ModelData("ConsumerInvoiceLineDiscountInput", [
     field("price", "price", "PriceInput", "input")
-  ]),
-  new ModelData("ConsumerInvoiceLineItemInput", [
-    field("item", "item", "ItemReferenceInput", "input"),
-    field("description", "description", "String", "scalar"),
-    field("quantity", "quantity", "Long", "scalar"),
-    field("unitPrice", "unit_price", "PriceInput", "input"),
-    field("unitDiscount", "unit_discount", "PriceInput", "input"),
-    field("unitTax", "unit_tax", "ConsumerInvoiceLevyInput", "input"),
-    field("unitDuty", "unit_duty", "ConsumerInvoiceLevyInput", "input")
   ]),
   new ModelData("ConsumerInvoicePaymentInput", [
     field("date", "date", "DateTimeIso8601", "scalar"),
@@ -643,14 +643,29 @@ export const models = new Models([
     field("tax", "tax", "ConsumerInvoiceLevyInput", "input"),
     field("duty", "duty", "ConsumerInvoiceLevyInput", "input")
   ]),
-  new ModelData("OrderSummaryLineItemInput", [
-    field("item", "item", "OrderSummaryItemInput", "input"),
-    field("quantity", "quantity", "Long", "scalar"),
-    field("discount", "discount", "PriceInput", "input"),
-    field("tax", "tax", "OrderSummaryLevyInput", "input"),
-    field("duty", "duty", "OrderSummaryLevyInput", "input"),
-    field("total", "total", "PriceInput", "input"),
-    field("priceAttributes", "price_attributes", "Object", "scalar")
+  new ModelData("OrderAddressInput", [
+    field("text", "text", "String", "scalar"),
+    field("streets", "streets", "String", "array"),
+    field("city", "city", "String", "scalar"),
+    field("province", "province", "String", "scalar"),
+    field("postal", "postal", "String", "scalar"),
+    field("country", "country", "String", "scalar"),
+    field("latitude", "latitude", "String", "scalar"),
+    field("longitude", "longitude", "String", "scalar"),
+    field("contact", "contact", "ContactInput", "input")
+  ]),
+  new ModelData("OrderSummaryImageInput", [
+    field("url", "url", "String", "scalar")
+  ]),
+  new ModelData("CheckoutItemContentAttributeInput", [
+    field("key", "key", "String", "scalar"),
+    field("name", "name", "String", "scalar"),
+    field("value", "value", "String", "scalar")
+  ]),
+  new ModelData("OrderSummaryLevyInput", [
+    field("rate", "rate", "Decimal", "scalar"),
+    field("rateLabel", "rate_label", "String", "scalar"),
+    field("value", "value", "PriceInput", "input")
   ]),
   new ModelData("OrderSummaryItemInput", [
     field("number", "number", "String", "scalar"),
@@ -664,10 +679,20 @@ export const models = new Models([
     field("duty", "duty", "OrderSummaryLevyInput", "input"),
     field("priceAttributes", "price_attributes", "Object", "scalar")
   ]),
-  new ModelData("OrderSummaryLevyInput", [
+  new ModelData("OrderSummaryPriceDetailInput", [
+    field("price", "price", "PriceInput", "input"),
+    field("name", "name", "String", "scalar"),
     field("rate", "rate", "Decimal", "scalar"),
-    field("rateLabel", "rate_label", "String", "scalar"),
-    field("value", "value", "PriceInput", "input")
+    field("rateLabel", "rate_label", "String", "scalar")
+  ]),
+  new ModelData("OrderSummaryLineItemInput", [
+    field("item", "item", "OrderSummaryItemInput", "input"),
+    field("quantity", "quantity", "Long", "scalar"),
+    field("discount", "discount", "PriceInput", "input"),
+    field("tax", "tax", "OrderSummaryLevyInput", "input"),
+    field("duty", "duty", "OrderSummaryLevyInput", "input"),
+    field("total", "total", "PriceInput", "input"),
+    field("priceAttributes", "price_attributes", "Object", "scalar")
   ]),
   new ModelData("OrderSummaryInput", [
     field("number", "number", "String", "scalar"),
@@ -682,31 +707,6 @@ export const models = new Models([
     field("total", "total", "OrderSummaryPriceDetailInput", "input"),
     field("lines", "lines", "OrderSummaryLineItemInput", "array"),
     field("identifiers", "identifiers", "Object", "scalar")
-  ]),
-  new ModelData("CheckoutItemContentAttributeInput", [
-    field("key", "key", "String", "scalar"),
-    field("name", "name", "String", "scalar"),
-    field("value", "value", "String", "scalar")
-  ]),
-  new ModelData("OrderSummaryImageInput", [
-    field("url", "url", "String", "scalar")
-  ]),
-  new ModelData("OrderSummaryPriceDetailInput", [
-    field("price", "price", "PriceInput", "input"),
-    field("name", "name", "String", "scalar"),
-    field("rate", "rate", "Decimal", "scalar"),
-    field("rateLabel", "rate_label", "String", "scalar")
-  ]),
-  new ModelData("OrderAddressInput", [
-    field("text", "text", "String", "scalar"),
-    field("streets", "streets", "String", "array"),
-    field("city", "city", "String", "scalar"),
-    field("province", "province", "String", "scalar"),
-    field("postal", "postal", "String", "scalar"),
-    field("country", "country", "String", "scalar"),
-    field("latitude", "latitude", "String", "scalar"),
-    field("longitude", "longitude", "String", "scalar"),
-    field("contact", "contact", "ContactInput", "input")
   ]),
   new ModelData("TaxRegistrationInput", [
     field("id", "id", "String", "scalar"),
@@ -741,15 +741,15 @@ export const models = new Models([
     field("order", "order", "OrderSummaryInput", "input"),
     field("errors", "errors", "CheckoutErrorInput", "array")
   ]),
-  new ModelData("CheckoutErrorInput", [
-    field("code", "code", "CheckoutErrorCode", "enum"),
-    field("messages", "messages", "String", "array"),
-    field("redirect", "redirect", "CheckoutRedirectInput", "input")
-  ]),
   new ModelData("CheckoutLineFormInput", [
     field("checkoutId", "checkout_id", "String", "scalar"),
     field("itemNumber", "item_number", "String", "scalar"),
     field("quantity", "quantity", "Long", "scalar")
+  ]),
+  new ModelData("CheckoutErrorInput", [
+    field("code", "code", "CheckoutErrorCode", "enum"),
+    field("messages", "messages", "String", "array"),
+    field("redirect", "redirect", "CheckoutRedirectInput", "input")
   ]),
   new ModelData("CheckoutRedirectInput", [
     field("method", "method", "CheckoutRedirectMethod", "enum"),

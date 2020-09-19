@@ -11,7 +11,7 @@ export default {
     deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.delete(`/organizations/${organizationId}`, {}),
 
-    updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
+    createLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
       dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
 
     updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>

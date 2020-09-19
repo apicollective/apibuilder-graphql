@@ -19,6 +19,41 @@ object MultiServiceView {
  */
 case class MultiServiceView(multiService: MultiService) {
 
+  lazy val query: MultiService = rewrite(GraphQLIntent.Query)
+
+  lazy val mutation: MultiService = rewrite(GraphQLIntent.Mutation)
+
+   private[this] def rewrite(intent: GraphQLIntent): MultiService = {
+    rewriters(intent).foldLeft(multiService) { case (ms, rewriter) =>
+      println(s"${intent}: Starting rewriter: ${rewriter.getClass.getName}")
+      rewriter.rewrite(ms)
+    }
+  }
+
+  private[this] def rewriters(intent: GraphQLIntent): List[MultiServiceRewriter] = {
+    val common = List(
+      FilterOperationsRewriter { op =>
+        GraphQLAttribute.fromOperation(op).map(_ => op)
+      },
+      FilterResponsesRewriter { operation =>
+        val all = operation.responses.filter(ApiBuilderHelper.is2xx)
+        assertSingleResponseType(operation, all)
+        all.headOption.toSeq
+      },
+      UnionTypesMustBeModelsRewriter,
+      RenameTypesByAttributeRewriter(intent),
+      ReduceTypesRewriter(intent),
+    )
+
+    intent match {
+      case GraphQLIntent.Query => common
+      case GraphQLIntent.Mutation => common ++ List(
+        UnionsToModelsRewriter,
+        AppendInputSuffixRewriter
+      )
+    }
+  }
+
   private[this] def assertSingleResponseType(operation: Operation, responses: Seq[Response]): Unit = {
     val responseTypes = responses.map(_.`type`).distinct
     if (responseTypes.size > 1) {
@@ -27,27 +62,4 @@ case class MultiServiceView(multiService: MultiService) {
       )
     }
   }
-
-  private[this] val base: MultiService = {
-    val ms1 = FilterOperationsRewriter { op =>
-      GraphQLAttribute.fromOperation(op).map(_ => op)
-    }.rewrite(multiService)
-
-    val ms2 = FilterResponsesRewriter{ operation =>
-      val all = operation.responses.filter(ApiBuilderHelper.is2xx)
-      assertSingleResponseType(operation, all)
-      all.headOption.toSeq
-    }.rewrite(ms1)
-
-    UnionTypesMustBeModelsRewriter.rewrite(ms2)
-  }
-
-  lazy val query: MultiService = GraphQLIntentRewriter.rewrite(base, GraphQLIntent.Query)
-
-  lazy val mutation: MultiService = {
-    val ms1 = GraphQLIntentRewriter.rewrite(base, GraphQLIntent.Mutation)
-    val ms2 = UnionsToModelsRewriter.rewrite(ms1)
-    AppendInputSuffixRewriter.rewrite(ms2)
-  }
-
 }

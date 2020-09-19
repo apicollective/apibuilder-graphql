@@ -25,7 +25,6 @@ case class MultiServiceView(multiService: MultiService) {
 
    private[this] def rewrite(intent: GraphQLIntent): MultiService = {
     rewriters(intent).foldLeft(multiService) { case (ms, rewriter) =>
-      println(s"${intent}: Starting rewriter: ${rewriter.getClass.getName}")
       rewriter.rewrite(ms)
     }
   }
@@ -49,7 +48,7 @@ case class MultiServiceView(multiService: MultiService) {
       case GraphQLIntent.Query => common
       case GraphQLIntent.Mutation => common ++ List(
         UnionsToModelsRewriter,
-        AppendInputSuffixRewriter
+        AppendInputSuffixRewriter,
       )
     }
   }

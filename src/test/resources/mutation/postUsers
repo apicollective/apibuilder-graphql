@@ -1,0 +1,10 @@
+type Mutation {
+  User: UserMutations
+}
+
+type UserMutations {
+  # Resource test.models.user
+  # Operation 'POST /users' response '200'
+  # Response 200 user
+  users(body: UserForm!): User
+}

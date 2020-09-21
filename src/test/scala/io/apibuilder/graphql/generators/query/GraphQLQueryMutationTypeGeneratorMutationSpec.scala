@@ -2,7 +2,7 @@ package io.apibuilder.graphql.generators.query
 
 import io.apibuilder.graphql.generators.helpers.QueryMutationHelpers
 import io.apibuilder.graphql.schema.GraphQLIntent
-import io.apibuilder.spec.v0.models.{Method, Model, Service}
+import io.apibuilder.spec.v0.models.{Method, Service}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -11,29 +11,28 @@ class GraphQLQueryMutationTypeGeneratorMutationSpec extends AnyWordSpec with Mat
 
   override val codeGenTestHelpersDir = "mutation"
 
-  private[this] val userModel = makeModel("user", plural = "users")
-
   def userService(
     method: Method,
-    bodyType: Option[Model] = None,
   ): Service = {
+    val user = makeModel("user", plural = "users")
+    val userForm = makeModel("user_form")
     makeService(
       namespace = "test",
-      models = Seq(userModel),
+      models = Seq(user, userForm),
       resources = Seq(
         makeResource(
-          userModel.name,
-          userModel.plural,
+          user.name,
+          user.plural,
           operations = Seq(
             makeOperation(
               method,
-              body = bodyType.map { b => makeBody(b.name) },
+              body = Some(makeBody(userForm.name)),
               path = "/users",
               attributes = Seq(
                 makeGraphQLAttribute("users"),
               ),
               responses = Seq(
-                make200Response(userModel.name),
+                make200Response(user.name),
               )
             )
           )

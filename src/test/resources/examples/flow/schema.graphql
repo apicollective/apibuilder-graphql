@@ -1,50 +1,29 @@
 type Query {
-  B2bCreditMemo: B2bCreditMemoQueries
-  B2bInvoice: B2bInvoiceQueries
-  OrderSummaryLineItem: OrderSummaryLineItemQueries
-  PublicKey: PublicKeyQueries
-  ConsumerInvoice: ConsumerInvoiceQueries
-  Organization: OrganizationQueries
-  CreditMemo: CreditMemoQueries
-  Checkout: CheckoutQueries
-}
-
-type B2bCreditMemoQueries {
   # Resource io.flow.consumer.invoice.v0.models.b2b_credit_memo
   # Operation 'GET /:organization/b2b/credit/memos' response '200'
   # Response 200 [b2b_credit_memo]
   b2bCreditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bCreditMemo!]
-}
 
-type B2bInvoiceQueries {
   # Resource io.flow.consumer.invoice.v0.models.b2b_invoice
   # Operation 'GET /:organization/b2b/invoices' response '200'
   # Response 200 [b2b_invoice]
   b2bInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [B2bInvoice!]
-}
 
-type OrderSummaryLineItemQueries {
   # Resource io.flow.experience.v0.models.order_summary_line_item
   # Operation 'GET /lines/:id' response '200'
   # Response 200 io.flow.experience.v0.models.order_summary_line_item
   line(id: String!): OrderSummaryLineItem
-}
 
-type PublicKeyQueries {
   # Resource io.flow.payment.v0.models.public_key
   # Operation 'GET /:organization/encryption/keys/latest' response '200'
   # Response 200 public_key
   publicKey(organization: String!): PublicKey
-}
 
-type ConsumerInvoiceQueries {
   # Resource io.flow.consumer.invoice.v0.models.consumer_invoice
   # Operation 'GET /:organization/consumer/invoices' response '200'
   # Response 200 [consumer_invoice]
   consumerInvoices(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [ConsumerInvoice!]
-}
 
-type OrganizationQueries {
   # Resource io.flow.common.v0.models.organization
   # Operation 'GET /organizations' response '200'
   # Response 200 [io.flow.common.v0.models.organization]
@@ -53,16 +32,12 @@ type OrganizationQueries {
   # Operation 'GET /organizations/:organization_id' response '200'
   # Response 200 io.flow.common.v0.models.organization
   organization(organizationId: String!): Organization
-}
 
-type CreditMemoQueries {
   # Resource io.flow.consumer.invoice.v0.models.credit_memo
   # Operation 'GET /:organization/credit/memos' response '200'
   # Response 200 [credit_memo]
   creditMemos(organization: String!, id: [String!], key: String, orderNumber: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "-created_at"): [CreditMemo!]
-}
 
-type CheckoutQueries {
   # Resource io.flow.checkout.backend.v0.models.checkout
   # Operation 'GET /v2/checkouts/:id' response '200'
   # Response 200 checkout
@@ -71,7 +46,9 @@ type CheckoutQueries {
 
 type Mutation {
   OrderSummaryLineItemInput: OrderSummaryLineItemInputMutations
+
   CheckoutInput: CheckoutInputMutations
+
   OrganizationInput: OrganizationInputMutations
 }
 

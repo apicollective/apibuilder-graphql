@@ -113,9 +113,10 @@ object GraphQLType {
       )
     }
   }
-  case class Query(operations: Seq[GraphQLQueryMutation]) extends QueryMutationType("query", operations) with GraphQLQueryMutationType
 
-  case class Mutation(operations: Seq[GraphQLQueryMutation]) extends QueryMutationType("mutation", operations) with GraphQLQueryMutationType
+  case class Query(operations: Seq[GraphQLQueryMutation]) extends FlatQueryMutationType("query", operations) with GraphQLQueryMutationType
+
+  case class Mutation(operations: Seq[GraphQLQueryMutation]) extends NamespacedQueryMutationType("mutation", operations) with GraphQLQueryMutationType
 
   case class Type(override val originalName: String, fields: Seq[GraphQLTypeField], comment: Option[String])
     extends StaticType("type", originalName, fields.map(_.formatted), comment)
@@ -156,7 +157,7 @@ object GraphQLType {
     )).mkString("\n")
   }
 
-  abstract class QueryMutationType(val originalName: String, operations: Seq[GraphQLQueryMutation]) {
+  abstract class NamespacedQueryMutationType(val originalName: String, operations: Seq[GraphQLQueryMutation]) {
     val name: String = Text.pascalCase(originalName)
     val formatted: String = (
       Seq(
@@ -169,10 +170,15 @@ object GraphQLType {
     ).mkString("\n\n")
   }
 
+  abstract class FlatQueryMutationType(val originalName: String, operations: Seq[GraphQLQueryMutation]) {
+    val name: String = Text.pascalCase(originalName)
+    val formatted: String = makeType(name, operations.map(_.code))
+  }
+
   private[this] def makeType(name: String, values: Seq[String]): String = {
     Seq(
       s"type $name {",
-      Text.indent(values.mkString("\n")),
+      Text.indent(values.mkString("\n\n")),
       "}",
     ).mkString("\n")
   }

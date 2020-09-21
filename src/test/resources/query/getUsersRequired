@@ -1,8 +1,4 @@
 type Query {
-  User: UserQueries
-}
-
-type UserQueries {
   # Resource test.models.user
   # Operation 'GET /users' response '200'
   # Response 200 [user]

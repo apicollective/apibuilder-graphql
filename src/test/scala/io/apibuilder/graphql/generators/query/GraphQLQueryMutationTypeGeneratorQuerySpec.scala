@@ -1,32 +1,20 @@
 package io.apibuilder.graphql.generators.query
 
-import io.apibuilder.graphql.generators.helpers.{CodeGenTestHelpers, GraphQLApiBuilderServiceHelpers}
+import io.apibuilder.graphql.generators.helpers.QueryMutationHelpers
 import io.apibuilder.graphql.schema.GraphQLIntent
 import io.apibuilder.spec.v0.models.{Method, Parameter, ParameterLocation, Service}
-import io.apibuilder.validation.MultiService
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
-  with GraphQLApiBuilderServiceHelpers
-  with CodeGenTestHelpers
+class GraphQLQueryMutationTypeGeneratorQuerySpec extends AnyWordSpec with Matchers
+  with QueryMutationHelpers
 {
 
   override val codeGenTestHelpersDir = "query"
 
-  def verify(fileName: String, service: Service): Unit = {
-    verify(fileName: String, makeMultiService(service))
-  }
-
-  def verify(fileName: String, multiService: MultiService): Unit = {
-    mustMatchFile(
-      fileName,
-      GraphQLQueryMutationTypeGenerator(multiService).generate(GraphQLIntent.Query).get.formatted
-    )
-  }
-
   def verify(
     fileName: String,
+    intent: GraphQLIntent,
     responseType: String = "user",
     parameters: Seq[Parameter] = Nil,
   ): Unit = {
@@ -35,7 +23,8 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
       userService(
         responseType = responseType,
         parameters = parameters,
-      )
+      ),
+      intent,
     )
   }
 
@@ -74,9 +63,10 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
   }
 
   "GET /users" must {
-    def verifyParam(fileName: String, p: Parameter) = {
+    def verifyParam(fileName: String, p: Parameter): Unit = {
       verify(
         fileName = fileName,
+        intent = GraphQLIntent.Query,
         responseType = "[user]",
         parameters = Seq(p)
       )
@@ -85,6 +75,7 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
     "no parameters" in {
       verify(
         "getUsersNoParameters",
+        intent = GraphQLIntent.Query,
         responseType = "[user]",
       )
     }
@@ -169,6 +160,7 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
       "includes only path parameters in name of method" in {
         verify(
           "getUsersPathIncludesOnlyPathParametersInNameOfMethod",
+          intent = GraphQLIntent.Query,
           parameters = Seq(
             makeParameter("id", "string", location = ParameterLocation.Path),
             makeParameter("status", "string", location = ParameterLocation.Query),
@@ -179,6 +171,7 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
       "organization path parameter moved to the name of the method" in {
         verify(
           "getUsersPathOrganizationPathParameterMovedToTheNameOfTheMethod",
+          intent = GraphQLIntent.Query,
           parameters = Seq(
             makeParameter("organization", "string", location = ParameterLocation.Path),
           )
@@ -188,6 +181,7 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
       "partner path parameter moved to the name of the method" in {
         verify(
           "getUsersPathPartnerPathParameterMovedToTheNameOfTheMethod",
+          intent = GraphQLIntent.Query,
           parameters = Seq(
             makeParameter("partner", "string", location = ParameterLocation.Path),
           )
@@ -211,8 +205,9 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers
       )
 
       verify(
-        "importsUserLocalName",
-        makeMultiService(Seq(common, userSvc)),
+        fileName = "importsUserLocalName",
+        intent = GraphQLIntent.Query,
+        multiService = makeMultiService(Seq(common, userSvc)),
       )
     }
   }

@@ -44,10 +44,6 @@ class MultiServiceViewSpec extends AnyWordSpec with Matchers
     val view = MultiServiceView(ms)
     mustFindEnum(view.mutation, "environment")
     val types = buildTypeSchema(view.mutation, GraphQLIntent.Mutation)
-    types.foreach {
-      case t: NamedGraphQLType => println(s" - t: ${t.name}")
-      case _ => //
-    }
     def findType(name: String): Option[NamedGraphQLType] = {
       types.collectFirst { case t: NamedGraphQLType if t.name == name => t }
     }

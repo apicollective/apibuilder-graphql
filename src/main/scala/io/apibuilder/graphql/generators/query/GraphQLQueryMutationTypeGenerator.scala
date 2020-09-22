@@ -23,8 +23,8 @@ case class GraphQLQueryMutation(
     case GraphQLIntent.Mutation => "Mutations"
   }
 
-  val name: String = MultiServiceView.stripInputSuffix(Text.pascalCase(resourceType.name))
-  val subTypeName: String = s"$name$suffix"
+  val name: String = MultiServiceView.stripInputSuffix(Text.camelCase(resourceType.name))
+  val subTypeName: String = Text.pascalCase(s"$name$suffix")
 }
 
 case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends ParameterHelpers {

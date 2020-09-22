@@ -174,7 +174,7 @@ object GraphQLType {
     private[this] def namespaces: String = (
       Seq(
         makeType(name, operations.map { op =>
-          s"${Text.camelCase(op.name)}: ${op.subTypeName}"
+          s"${op.name}: ${op.subTypeName}"
         })
       ) ++ operations.map { op =>
         makeType(op.subTypeName, op.operations.map(_.code))
@@ -184,7 +184,7 @@ object GraphQLType {
 
   private[this] def makeType(name: String, values: Seq[String]): String = {
     Seq(
-      s"type $name {",
+      s"type ${Text.pascalCase(name)} {",
       Text.indent(values.mkString("\n\n")),
       "}",
     ).mkString("\n")

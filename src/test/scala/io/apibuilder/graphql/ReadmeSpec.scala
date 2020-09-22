@@ -26,7 +26,7 @@ class ReadmeSpec extends AnyWordSpec with Matchers {
         GraphQLCodeGenerator.Default.generate(multiService) match {
           case Valid(schema) => {
             println("Schema is valid.")
-            schema.invocation.files.foreach { f =>
+            schema.files.foreach { f =>
               println(s"File: " + f.name)
               println(f.contents)
               println("")

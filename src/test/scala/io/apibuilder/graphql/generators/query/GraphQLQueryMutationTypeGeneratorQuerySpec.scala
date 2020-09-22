@@ -1,49 +1,43 @@
 package io.apibuilder.graphql.generators.query
 
-import io.apibuilder.graphql.generators.helpers.GraphQLApiBuilderServiceHelpers
+import io.apibuilder.graphql.generators.helpers.QueryMutationHelpers
 import io.apibuilder.graphql.schema.GraphQLIntent
 import io.apibuilder.spec.v0.models.{Method, Parameter, ParameterLocation, Service}
-import io.apibuilder.validation.MultiService
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers with GraphQLApiBuilderServiceHelpers {
+class GraphQLQueryMutationTypeGeneratorQuerySpec extends AnyWordSpec with Matchers
+  with QueryMutationHelpers
+{
 
-  def gen(service: Service): Option[String] = {
-    gen(makeMultiService(service))
-  }
+  override val codeGenTestHelpersDir = "query"
 
-  def gen(multiService: MultiService): Option[String] = {
-    GraphQLQueryMutationTypeGenerator(multiService).generate(GraphQLIntent.Query).map(stripComments)
-  }
-
-  private[this] def gen(
+  def verify(
+    fileName: String,
+    intent: GraphQLIntent,
     responseType: String = "user",
     parameters: Seq[Parameter] = Nil,
-  ): String = {
-    val c = gen(
+  ): Unit = {
+    verify(
+      fileName,
       userService(
         responseType = responseType,
         parameters = parameters,
-      )
-    ).getOrElse("")
-    println(s"Generated:\n$c\n\n")
-    c
-  }
-
-  private[this] def stripComments(value: String): String = {
-    value.split("\n").map(_.trim).filterNot(_.startsWith("#")).mkString("\n")
+      ),
+      intent,
+    )
   }
 
   private[this] val userModel = makeModel("user", plural = "users")
 
-  private[this] def userService(
+  def userService(
     responseType: String,
     modelType: String = "user",
     parameters: Seq[Parameter] = Nil,
   ): Service = {
     val userStatus = makeEnum("user_status")
     makeService(
+      namespace = "test",
       models = Seq(userModel),
       enums = Seq(userStatus),
       resources = Seq(
@@ -69,143 +63,135 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers wi
   }
 
   "GET /users" must {
-    def param(p: Parameter) = {
-      gen(
+    def verifyParam(fileName: String, p: Parameter): Unit = {
+      verify(
+        fileName = fileName,
+        intent = GraphQLIntent.Query,
         responseType = "[user]",
         parameters = Seq(p)
       )
     }
 
     "no parameters" in {
-      gen(
+      verify(
+        "getUsersNoParameters",
+        intent = GraphQLIntent.Query,
         responseType = "[user]",
-      ) must equal(
-        "users: [User!]"
       )
     }
 
     "array parameter" in {
-      param(
+      verifyParam(
+        "getUsersArrayParameter",
         makeParameter("id", "[string]", required = false)
-      ) must equal(
-        "users(id: [String!]): [User!]"
       )
     }
 
     "camelCase" in {
-      param(
+      verifyParam(
+        "getUsersCamelCase",
         makeParameter("user_id", "string", required = false)
-      ) must equal(
-        "users(userId: String): [User!]"
       )
     }
 
     "default" must {
       "integer" must {
         "optional" in {
-          param(
+          verifyParam(
+            "getUsersDefaultIntegerOptional",
             makeParameter("limit", "integer", required = false, default = Some("25"))
-          ) must equal(
-            "users(limit: Int = 25): [User!]"
           )
         }
 
         "required" in {
-          param(
+          verifyParam(
+            "getUsersDefaultRequired",
             makeParameter("limit", "integer", required = true, default = Some("25"))
-          ) must equal(
-            "users(limit: Int! = 25): [User!]"
           )
         }
 
         "string" must {
           "optional" in {
-            param(
+            verifyParam(
+              "getUsersDefaultStringOptional",
               makeParameter("sort", "string", required = false, default = Some("-created_at"))
-            ) must equal(
-              """users(sort: String = "-created_at"): [User!]"""
             )
           }
 
           "required" in {
-            param(
+            verifyParam(
+              "getUsersDefaultStringRequired",
               makeParameter("sort", "string", required = true, default = Some("-created_at"))
-            ) must equal(
-              """users(sort: String! = "-created_at"): [User!]"""
             )
           }
 
           "quotes" in {
-            param(
+            verifyParam(
+              "getUsersDefaultStringQuotes",
               makeParameter("sort", "string", required = true, default = Some("\"-created_at\""))
-            ) must equal(
-              """users(sort: String! = "\"-created_at\""): [User!]"""
             )
           }
         }
       }
 
       "enum" in {
-        param(
+        verifyParam(
+          "getUsersEnum",
           makeParameter("status", "user_status", required = false, default = Some("active"))
-        ) must equal(
-          """users(status: UserStatus = ACTIVE): [User!]"""
         )
       }
     }
 
     "optional" in {
-      param(
+      verifyParam(
+        "getUsersOptional",
         makeParameter("email", "string", required = false)
-      ) must equal(
-        "users(email: String): [User!]"
       )
     }
 
     "required" in {
-      param(
+      verifyParam(
+        "getUsersRequired",
         makeParameter("email", "string", required = true)
-      ) must equal(
-        "users(email: String!): [User!]"
       )
     }
 
     "path" must {
       "includes only path parameters in name of method" in {
-        gen(
+        verify(
+          "getUsersPathIncludesOnlyPathParametersInNameOfMethod",
+          intent = GraphQLIntent.Query,
           parameters = Seq(
             makeParameter("id", "string", location = ParameterLocation.Path),
             makeParameter("status", "string", location = ParameterLocation.Query),
           )
-        ) must equal(
-          "users(id: String!, status: String!): User"
         )
       }
 
       "organization path parameter moved to the name of the method" in {
-        gen(
+        verify(
+          "getUsersPathOrganizationPathParameterMovedToTheNameOfTheMethod",
+          intent = GraphQLIntent.Query,
           parameters = Seq(
             makeParameter("organization", "string", location = ParameterLocation.Path),
           )
-        ) must equal(
-          "users(organization: String!): User"
         )
       }
 
       "partner path parameter moved to the name of the method" in {
-        gen(
+        verify(
+          "getUsersPathPartnerPathParameterMovedToTheNameOfTheMethod",
+          intent = GraphQLIntent.Query,
           parameters = Seq(
             makeParameter("partner", "string", location = ParameterLocation.Path),
           )
-        ) must equal(
-          "users(partner: String!): User"
         )
       }
     }
   }
 
   "imports" must {
-    "uses local name" in {
+    "use local name" in {
       val common = makeService(
         name = "common",
         namespace = "io.flow.common.v0",
@@ -218,11 +204,12 @@ class GraphQLQueryMutationTypeGeneratorSpec extends AnyWordSpec with Matchers wi
         imports = Seq(makeImport(common)),
       )
 
-      gen(
-        makeMultiService(Seq(common, userSvc)),
-      ) must equal(
-        Some("users: User")
+      verify(
+        fileName = "importsUserLocalName",
+        intent = GraphQLIntent.Query,
+        multiService = makeMultiService(Seq(common, userSvc)),
       )
     }
   }
 }
+

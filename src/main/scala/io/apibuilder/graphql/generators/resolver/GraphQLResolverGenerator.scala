@@ -9,13 +9,13 @@ case class GraphQLResolverGenerator(multiService: MultiService) {
 
   private[this] val unionResolverGenerator: UnionResolverGenerator = UnionResolverGenerator()
   private[this] val enumResolverGenerator: EnumResolverGenerator = EnumResolverGenerator()
+  private[this] val methodResolverGenerator: GraphQLMethodResolverGenerator = GraphQLMethodResolverGenerator(multiService)
 
   def generate(types: Seq[GraphQLType], intent: GraphQLIntent): Option[GraphQLResolvers] = {
-    val graphQLMethodResolverGenerator = GraphQLMethodResolverGenerator(multiService)
     val builder = TypeScriptFileBuilder()
     builder.setWrapWithDefaultExport(true)
 
-    graphQLMethodResolverGenerator.generate(builder, intent)
+    methodResolverGenerator.generate(builder, intent)
     if (builder.nonEmpty) {
       builder.wrapContentWithObject(toTypeName(intent))
     }

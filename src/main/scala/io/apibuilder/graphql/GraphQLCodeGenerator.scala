@@ -5,7 +5,7 @@ import cats.implicits._
 import io.apibuilder.graphql.generators.metadata.ApiBuilderTypeMetadataGenerator
 import io.apibuilder.graphql.generators.query.GraphQLQueryMutationTypeGenerator
 import io.apibuilder.graphql.generators.resolver.GraphQLResolverGenerator
-import io.apibuilder.graphql.schema.{GraphQLGeneratedCode, GraphQLIntent, GraphQLResolvers, GraphQLType, GraphQLTypeSchema, NamedGraphQLType, SchemaValidator}
+import io.apibuilder.graphql.schema.{GraphQLGeneratedCode, GraphQLIntent, GraphQLQueryMutationType, GraphQLResolvers, GraphQLType, GraphQLTypeSchema, NamedGraphQLType, SchemaValidator}
 import io.apibuilder.graphql.generators.schema.{ApiBuilderTypeToGraphQLConverter, LocalScalarType}
 import io.apibuilder.graphql.util.MultiServiceView
 import io.apibuilder.validation.MultiService
@@ -24,8 +24,8 @@ case class GraphQLCodeGenerator(schemaValidator: SchemaValidator) {
     }
   }
 
-  private[this] def qmType(multiService: MultiService, intent: GraphQLIntent): Option[Seq[String]] = {
-    GraphQLQueryMutationTypeGenerator(multiService).generate(intent).map(Seq(_))
+  private[this] def qmType(multiService: MultiService, intent: GraphQLIntent): Option[GraphQLQueryMutationType] = {
+    GraphQLQueryMutationTypeGenerator(multiService).generate(intent)
   }
 
   private[graphql] lazy val schemaScalars: Seq[GraphQLType] = {
@@ -52,9 +52,9 @@ case class GraphQLCodeGenerator(schemaValidator: SchemaValidator) {
         typeSchema = typeSchema,
         inputSchema = finalInputSchema,
         scalarSchema = GraphQLTypeSchema(schemaScalars),
-        querySchema = qmType(view.query, GraphQLIntent.Query).map(GraphQLType.Query),
+        querySchema = qmType(view.query, GraphQLIntent.Query).collect { case t: GraphQLType.Query => t },
         queryResolvers = generateResolvers(view.query, typeSchema.types, GraphQLIntent.Query),
-        mutationSchema = qmType(view.mutation, GraphQLIntent.Mutation).map(GraphQLType.Mutation),
+        mutationSchema = qmType(view.mutation, GraphQLIntent.Mutation).collect { case t: GraphQLType.Mutation => t },
         mutationResolvers = generateResolvers(view.mutation, finalInputSchema.types, GraphQLIntent.Mutation),
         typeMetadata = ApiBuilderTypeMetadataGenerator.generate(
           typeSchema.types ++ finalInputSchema.types

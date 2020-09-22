@@ -3,7 +3,12 @@ package io.apibuilder.graphql
 import apibuilder.{ApiBuilderHelper, ApiBuilderHelperImpl}
 import io.apibuilder.graphql.schema.GraphQLIntent
 import io.apibuilder.spec.v0.models._
-import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService}
+import io.apibuilder.validation.{AnyType, ApiBuilderService, ApiBuilderType, MultiService}
+
+case class InternalResource(
+  resource: Resource,
+  `type`: AnyType,
+)
 
 /**
  * Represents an ApiBuilder operation that has a graphql attribute specified
@@ -12,7 +17,7 @@ case class GraphQLOperation(
   multiService: MultiService,
   service: ApiBuilderService,
   graphQLIntent: GraphQLIntent,
-  resource: Resource,
+  resource: InternalResource,
   originalOperation: Operation,
   response: Response,
   attribute: GraphQLAttribute,
@@ -110,7 +115,7 @@ object GraphQLOperation {
                 multiService = ms,
                 service = service,
                 graphQLIntent = intent,
-                resource = resource,
+                resource = toInternalResource(ms, service, resource),
                 originalOperation = operation,
                 attribute = attribute,
                 response = response,
@@ -120,6 +125,15 @@ object GraphQLOperation {
         }
       }
     }
+  }
+
+  private[this] def toInternalResource(ms: MultiService, service: ApiBuilderService, resource: Resource) = {
+    InternalResource(
+      resource,
+      ms.findType(service.namespace, resource.`type`).getOrElse {
+        sys.error(s"Failed to resolve resource type '${resource.`type`}'")
+      }
+    )
   }
 
   /**

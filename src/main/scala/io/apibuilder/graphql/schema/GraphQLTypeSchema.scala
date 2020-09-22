@@ -1,7 +1,7 @@
 package io.apibuilder.graphql.schema
 
 import io.apibuilder.graphql.generators.builders.TypeScriptFile
-import io.apibuilder.generator.v0.models.{File, Invocation}
+import io.apibuilder.generator.v0.models.File
 
 case class GraphQLGeneratedCode(
   typeSchema: GraphQLTypeSchema,
@@ -14,16 +14,11 @@ case class GraphQLGeneratedCode(
   mutationResolvers: Option[GraphQLResolvers],
 ) {
 
-  lazy val invocation: Invocation = {
-    Invocation(
-      source = "See files",
-      files = Seq(
-        File(name = "schema.graphql", contents = allTypes),
-        File("resolvers.ts", contents = allResolvers.map(_.formatted).getOrElse("// No resolvers")),
-        File("type-metadata.ts", contents = typeMetadata.map(_.formatted).getOrElse("// No metadata")),
-      )
-    )
-  }
+  lazy val files: Seq[File] = Seq(
+      File(name = "schema.graphql", contents = allTypes),
+      File("resolvers.ts", contents = allResolvers.map(_.formatted).getOrElse("// No resolvers")),
+      File("type-metadata.ts", contents = typeMetadata.map(_.formatted).getOrElse("// No metadata")),
+  )
 
   private[this] val allTypes: String = (
     Seq(

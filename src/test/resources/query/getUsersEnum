@@ -1,0 +1,6 @@
+type Query {
+  # Resource test.models.user
+  # Operation 'GET /users' response '200'
+  # Response 200 [user]
+  users(status: UserStatus = ACTIVE): [User!]
+}

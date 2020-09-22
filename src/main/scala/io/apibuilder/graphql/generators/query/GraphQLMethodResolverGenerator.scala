@@ -5,7 +5,7 @@ import io.apibuilder.graphql.GraphQLOperation
 import io.apibuilder.graphql.generators.builders.TypeScriptFileBuilder
 import io.apibuilder.graphql.generators.schema.LocalScalarType
 import io.apibuilder.graphql.schema.GraphQLIntent
-import io.apibuilder.graphql.util.Text
+import io.apibuilder.graphql.util.{Constants, Text}
 import io.apibuilder.spec.v0.models.{Operation, Parameter, ParameterLocation}
 import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
 
@@ -16,11 +16,23 @@ import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService
 case class GraphQLMethodResolverGenerator(multiService: MultiService) extends ParameterHelpers {
 
   private[this] val helper:  ApiBuilderHelper = ApiBuilderHelperImpl(multiService)
+  private[this] val queryMutationTypeGenerator: GraphQLQueryMutationTypeGenerator = GraphQLQueryMutationTypeGenerator(multiService)
 
   def generate(builder: TypeScriptFileBuilder, intent: GraphQLIntent): Unit = {
-    val operations = GraphQLOperation.all(multiService, intent).filter(_.methodIntent == intent)
-    if (operations.nonEmpty) {
-      operations.foreach { op => generate(builder, op) }
+    val all = queryMutationTypeGenerator.generateOperations(intent)
+    if (Constants.Resolvers.includeNamespaces(intent)) {
+      all.foreach { qm =>
+        val subBuilder = TypeScriptFileBuilder()
+        qm.operations.map(_.operation).foreach { op =>
+          generate(subBuilder, op)
+        }
+        subBuilder.wrapContentWithObject(qm.name)
+        subBuilder.build().foreach(builder.add)
+      }
+    } else {
+      all.flatMap(_.operations.map(_.operation)).foreach { op =>
+        generate(builder, op)
+      }
     }
   }
 

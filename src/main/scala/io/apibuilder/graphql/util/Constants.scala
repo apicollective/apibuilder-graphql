@@ -1,5 +1,7 @@
 package io.apibuilder.graphql.util
 
+import io.apibuilder.graphql.schema.GraphQLIntent
+
 object Constants {
 
   object GraphQLAttribute {
@@ -8,4 +10,15 @@ object Constants {
       val Name: String = "name"
     }
   }
+
+  object Resolvers {
+    def includeNamespaces(intent: GraphQLIntent): Boolean = {
+      intent match {
+        case GraphQLIntent.Query => false
+        case GraphQLIntent.Mutation => true
+      }
+    }
+  }
+
+
 }

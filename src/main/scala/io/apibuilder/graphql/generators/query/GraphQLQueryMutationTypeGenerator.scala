@@ -3,53 +3,86 @@ package io.apibuilder.graphql.generators.query
 import apibuilder.ApiBuilderHelperImpl
 import io.apibuilder.graphql.GraphQLOperation
 import io.apibuilder.graphql.generators.schema.ApiBuilderTypeToGraphQLConverter
-import io.apibuilder.graphql.schema.GraphQLIntent
+import io.apibuilder.graphql.schema.{GraphQLIntent, GraphQLQueryMutationType, GraphQLType}
 import io.apibuilder.graphql.util.{MultiServiceView, Text}
 import io.apibuilder.spec.v0.models._
-import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
+import io.apibuilder.validation.{AnyType, ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
+
+case class GraphQLQueryMutationOperation(
+  operation: GraphQLOperation,
+  code: String,
+)
+
+case class GraphQLQueryMutation(
+  intent: GraphQLIntent,
+  resourceType: AnyType,
+  operations: Seq[GraphQLQueryMutationOperation],
+) {
+  private[this] val suffix: String = intent match {
+    case GraphQLIntent.Query => "Queries"
+    case GraphQLIntent.Mutation => "Mutations"
+  }
+
+  val name: String = MultiServiceView.stripInputSuffix(Text.pascalCase(resourceType.name))
+  val subTypeName: String = s"$name$suffix"
+}
 
 case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends ParameterHelpers {
 
   private[this] val helper = ApiBuilderHelperImpl(multiService)
 
-  def generate(intent: GraphQLIntent): Option[String] = {
-    def converter(apiBuilderService: ApiBuilderService) = ApiBuilderTypeToGraphQLConverter(
-      multiService,
-      intent,
-      namespace = apiBuilderService.service.namespace,
-    )
-
-    GraphQLOperation.all(multiService, intent)
-      .filter(_.methodIntent == intent)
-      .map { op =>
-      generate(converter(op.service), op)
-    }.filterNot(_.isEmpty).toList match {
+  def generate(intent: GraphQLIntent): Option[GraphQLQueryMutationType] = {
+    generateOperations(intent).toList match {
       case Nil => None
-      case clauses => Some(clauses.mkString("\n\n"))
+      case ops => Some(
+        intent match {
+          case GraphQLIntent.Query => GraphQLType.Query(ops)
+          case GraphQLIntent.Mutation => GraphQLType.Mutation(ops)
+        }
+      )
     }
   }
 
-  private[this] def generate(converter: ApiBuilderTypeToGraphQLConverter, op: GraphQLOperation): String = {
+  def generateOperations(intent: GraphQLIntent): Seq[GraphQLQueryMutation] = {
+    GraphQLOperation.all(multiService, intent)
+      .filter(_.methodIntent == intent)
+      .groupBy(_.resource.`type`).map { case (resourceType, resourceOperations) =>
+      GraphQLQueryMutation(
+        intent,
+        resourceType,
+        resourceOperations.map(generateOperations),
+      )
+    }.toSeq
+  }
+
+  private[this] def generateOperations(op: GraphQLOperation): GraphQLQueryMutationOperation = {
+    val converter = ApiBuilderTypeToGraphQLConverter(
+      multiService,
+      op.graphQLIntent,
+      namespace = op.service.namespace,
+    )
+
     val params = allParametersWithBody(op.originalOperation).map { p => toParam(converter, op, p) } match {
       case Nil => ""
       case els => "(" + els.mkString(", ") + ")"
     }
-    val responseType = stripInputSuffix(converter.mustFindFieldTypeDeclaration(op.description, op.response.`type`))
+    val responseType = MultiServiceView.stripInputSuffix(converter.mustFindFieldTypeDeclaration(op.description, op.response.`type`))
 
-    Seq(
+    val code = Seq(
       toComment(op),
       s"${op.attribute.name}$params: $responseType"
     ).mkString("\n")
+
+    GraphQLQueryMutationOperation(op, code)
   }
 
   private[this] def toComment(op: GraphQLOperation): String = {
-    val name = helper.resolveType(op.service.service, op.resource) match {
-      case None => s"Service ${op.service.name}"
-      case Some(t: ApiBuilderType) => s"Resource ${t.qualified}"
-      case Some(t: ScalarType) => s"Scalar ${t.name}"
+    val name = op.resource.`type` match {
+      case t: ApiBuilderType => s"Resource ${t.qualified}"
+      case t: ScalarType => s"Scalar ${t.name}"
     }
     Seq(
-      s"$name ${op.resource.path.getOrElse("N/A")}",
+      name,
       op.description,
       s"Response ${toText(op.response.code)} ${op.response.`type`}",
     ).map { p => s"# $p" }.mkString("\n")
@@ -110,12 +143,4 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
     }
   }
 
-  private[this] def stripInputSuffix(value: String): String = {
-    val input = Text.pascalCase(MultiServiceView.InputSuffix)
-    if (value.endsWith(input)) {
-      value.dropRight(input.length)
-    } else {
-      value
-    }
-  }
 }

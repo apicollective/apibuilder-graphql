@@ -2,7 +2,7 @@ import inputMapper from "../graphql/inputMapper";
 
 export default {
   Mutation: {
-    OrderSummaryLineItem: {
+    orderSummaryLineItem: {
       createLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
         dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
 
@@ -13,12 +13,12 @@ export default {
         dataSources.api.delete(`/lines/${id}`, {})
     },
 
-    Checkout: {
+    checkout: {
       createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
         dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
     },
 
-    Organization: {
+    organization: {
       createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
         dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
 

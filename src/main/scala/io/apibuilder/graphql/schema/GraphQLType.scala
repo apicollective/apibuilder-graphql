@@ -2,7 +2,7 @@ package io.apibuilder.graphql.schema
 
 import io.apibuilder.graphql.generators.query.GraphQLQueryMutation
 import io.apibuilder.graphql.generators.schema.LocalScalarType
-import io.apibuilder.graphql.util.{MultiServiceView, Text}
+import io.apibuilder.graphql.util.{Constants, MultiServiceView, Text}
 import io.apibuilder.spec.v0.models.Method
 import io.apibuilder.validation.ApiBuilderType
 
@@ -114,9 +114,9 @@ object GraphQLType {
     }
   }
 
-  case class Query(operations: Seq[GraphQLQueryMutation]) extends FlatQueryMutationType("query", operations) with GraphQLQueryMutationType
+  case class Query(operations: Seq[GraphQLQueryMutation]) extends QueryMutationType(GraphQLIntent.Query, "query", operations) with GraphQLQueryMutationType
 
-  case class Mutation(operations: Seq[GraphQLQueryMutation]) extends NamespacedQueryMutationType("mutation", operations) with GraphQLQueryMutationType
+  case class Mutation(operations: Seq[GraphQLQueryMutation]) extends QueryMutationType(GraphQLIntent.Mutation, "mutation", operations) with GraphQLQueryMutationType
 
   case class Type(override val originalName: String, fields: Seq[GraphQLTypeField], comment: Option[String])
     extends StaticType("type", originalName, fields.map(_.formatted), comment)
@@ -157,9 +157,19 @@ object GraphQLType {
     )).mkString("\n")
   }
 
-  abstract class NamespacedQueryMutationType(val originalName: String, operations: Seq[GraphQLQueryMutation]) {
+  abstract class QueryMutationType(intent: GraphQLIntent, val originalName: String, operations: Seq[GraphQLQueryMutation]) {
     val name: String = Text.pascalCase(originalName)
-    val formatted: String = (
+    val formatted: String = {
+      if (Constants.Resolvers.includeNamespaces(intent)) {
+        namespaces
+      } else {
+        flat
+      }
+    }
+
+    private[this] def flat: String = makeType(name, operations.map(_.code))
+
+    private[this] def namespaces: String = (
       Seq(
         makeType(name, operations.map { op =>
           s"${op.name}: ${op.subTypeName}"
@@ -168,11 +178,6 @@ object GraphQLType {
         makeType(op.subTypeName, Seq(op.code))
       }
     ).mkString("\n\n")
-  }
-
-  abstract class FlatQueryMutationType(val originalName: String, operations: Seq[GraphQLQueryMutation]) {
-    val name: String = Text.pascalCase(originalName)
-    val formatted: String = makeType(name, operations.map(_.code))
   }
 
   private[this] def makeType(name: String, values: Seq[String]): String = {

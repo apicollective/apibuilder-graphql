@@ -36,7 +36,7 @@ sealed trait GraphQLQueryMutationType extends NamedGraphQLType {
 }
 
 case class GraphQLTypeUnionType(originalName: String) {
-  val name: String = Text.camelCase(originalName)
+  val name: String = Text.pascalCase(originalName)
 }
 
 case class GraphQLTypeField(
@@ -174,7 +174,7 @@ object GraphQLType {
     private[this] def namespaces: String = (
       Seq(
         makeType(name, operations.map { op =>
-          s"${op.name}: ${op.subTypeName}"
+          s"${Text.camelCase(op.name)}: ${op.subTypeName}"
         })
       ) ++ operations.map { op =>
         makeType(op.subTypeName, op.operations.map(_.code))

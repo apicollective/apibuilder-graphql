@@ -18,6 +18,7 @@ class TextSpec extends AnyWordSpec with Matchers {
     Text.camelCase("fooBar_baz") must be("fooBarBaz")
     Text.camelCase("FOO") must be("foo")
     Text.camelCase("FOOBAR") must be("foobar")
+    Text.camelCase("FooBar") must be("fooBar")
   }
 
   "pascalCase" in {
@@ -28,5 +29,10 @@ class TextSpec extends AnyWordSpec with Matchers {
     Text.allCaps("foo_bar") must be("FOO_BAR")
     Text.allCaps("foo bar") must be("FOO_BAR")
     Text.allCaps("foo-bar") must be("FOO_BAR")
+  }
+
+  "splitIntoWords" in {
+    Text.splitIntoWords("foo_bar") must be(Seq("foo", "bar"))
+    Text.splitIntoWords("FooBar") must be(Seq("Foo", "Bar"))
   }
 }

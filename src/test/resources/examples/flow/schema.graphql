@@ -46,11 +46,11 @@ type Query {
 }
 
 type Mutation {
-  OrderSummaryLineItem: OrderSummaryLineItemMutations
+  orderSummaryLineItem: OrderSummaryLineItemMutations
 
-  Checkout: CheckoutMutations
+  checkout: CheckoutMutations
 
-  Organization: OrganizationMutations
+  organization: OrganizationMutations
 }
 
 type OrderSummaryLineItemMutations {

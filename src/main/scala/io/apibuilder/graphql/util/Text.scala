@@ -59,8 +59,12 @@ object Text {
   def camelCase(words: Seq[String]): String = {
     words.toList match {
       case Nil => ""
-      case part :: rest => part + capitalize(rest)
+      case part :: rest => initLowerCase(part) + capitalize(rest)
     }
+  }
+
+  private[this] def initLowerCase(str: String): String = {
+    str.take(1).toLowerCase() + str.drop(1)
   }
 
   private[this] val WordDelimiterRx = "_|\\-|\\.|:|/| ".r

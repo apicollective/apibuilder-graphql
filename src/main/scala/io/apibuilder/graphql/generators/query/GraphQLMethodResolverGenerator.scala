@@ -16,11 +16,12 @@ import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService
 case class GraphQLMethodResolverGenerator(multiService: MultiService) extends ParameterHelpers {
 
   private[this] val helper:  ApiBuilderHelper = ApiBuilderHelperImpl(multiService)
+  private[this] val queryMutationTypeGenerator: GraphQLQueryMutationTypeGenerator = GraphQLQueryMutationTypeGenerator(multiService)
 
   def generate(builder: TypeScriptFileBuilder, intent: GraphQLIntent): Unit = {
-    val operations = GraphQLOperation.all(multiService, intent).filter(_.methodIntent == intent)
-    if (operations.nonEmpty) {
-      operations.foreach { op => generate(builder, op) }
+    val mutations = queryMutationTypeGenerator.generate(intent).map(_.operations.flatMap(_.operations)).getOrElse(Nil)
+    if (mutations.nonEmpty) {
+      mutations.foreach { m => generate(builder, m.op) }
     }
   }
 

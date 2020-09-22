@@ -8,10 +8,15 @@ import io.apibuilder.graphql.util.{MultiServiceView, Text}
 import io.apibuilder.spec.v0.models._
 import io.apibuilder.validation.{AnyType, ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
 
+case class GraphQLQueryMutationOperation(
+  op: GraphQLOperation,
+  code: String,
+)
+
 case class GraphQLQueryMutation(
   intent: GraphQLIntent,
   resourceType: AnyType,
-  code: String,
+  operations: Seq[GraphQLQueryMutationOperation],
 ) {
   private[this] val suffix: String = intent match {
     case GraphQLIntent.Query => "Queries"
@@ -45,12 +50,12 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
       GraphQLQueryMutation(
         intent,
         resourceType,
-        resourceOperations.map(generateOperations).mkString("\n"),
+        resourceOperations.map(generateOperations),
       )
     }.toSeq
   }
 
-  private[this] def generateOperations(op: GraphQLOperation): String = {
+  private[this] def generateOperations(op: GraphQLOperation): GraphQLQueryMutationOperation = {
     val converter = ApiBuilderTypeToGraphQLConverter(
       multiService,
       op.graphQLIntent,
@@ -63,10 +68,12 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
     }
     val responseType = stripInputSuffix(converter.mustFindFieldTypeDeclaration(op.description, op.response.`type`))
 
-    Seq(
+    val code = Seq(
       toComment(op),
       s"${op.attribute.name}$params: $responseType"
     ).mkString("\n")
+
+    GraphQLQueryMutationOperation(op, code)
   }
 
   private[this] def toComment(op: GraphQLOperation): String = {

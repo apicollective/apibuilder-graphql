@@ -2,15 +2,6 @@ import inputMapper from "../graphql/inputMapper";
 
 export default {
   Mutation: {
-    createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
-
-    updateOrganization: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.put(`/organizations/${organizationId}`, inputMapper("OrganizationPutFormInput", body)),
-
-    deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.delete(`/organizations/${organizationId}`, {}),
-
     createLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
       dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
 
@@ -21,7 +12,16 @@ export default {
       dataSources.api.delete(`/lines/${id}`, {}),
 
     createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
+      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {}),
+
+    createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
+
+    updateOrganization: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.put(`/organizations/${organizationId}`, inputMapper("OrganizationPutFormInput", body)),
+
+    deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.delete(`/organizations/${organizationId}`, {})
   },
 
   ConsumerInvoiceLineDiscriminator: {
@@ -37,11 +37,14 @@ export default {
     b2bInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/b2b/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
+    line: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/lines/${id}`),
+
+    publicKey: (_: any, { organization }: { organization: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/encryption/keys/latest`),
+
     consumerInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/consumer/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
-
-    creditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
     organizations: (_: any, { id, name, environment, parent, limit, offset, sort }: { id: any, name: string, environment: any, parent: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get("/organizations", { id, name, environment: inputMapper("Environment", environment), parent, limit, offset, sort }),
@@ -49,11 +52,8 @@ export default {
     organization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/organizations/${organizationId}`),
 
-    publicKey: (_: any, { organization }: { organization: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/encryption/keys/latest`),
-
-    line: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/lines/${id}`),
+    creditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
     checkout: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/v2/checkouts/${id}`)

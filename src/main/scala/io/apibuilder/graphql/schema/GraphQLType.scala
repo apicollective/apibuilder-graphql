@@ -31,7 +31,9 @@ sealed trait NamedGraphQLType extends GraphQLType {
   def name: String
 }
 
-sealed trait GraphQLQueryMutationType extends NamedGraphQLType
+sealed trait GraphQLQueryMutationType extends NamedGraphQLType {
+  def operations: Seq[GraphQLQueryMutation]
+}
 
 case class GraphQLTypeUnionType(originalName: String) {
   val name: String = Text.camelCase(originalName)
@@ -167,7 +169,7 @@ object GraphQLType {
       }
     }
 
-    private[this] def flat: String = makeType(name, operations.map(_.code))
+    private[this] def flat: String = makeType(name, operations.flatMap(_.operations.map(_.code)))
 
     private[this] def namespaces: String = (
       Seq(
@@ -175,7 +177,7 @@ object GraphQLType {
           s"${op.name}: ${op.subTypeName}"
         })
       ) ++ operations.map { op =>
-        makeType(op.subTypeName, Seq(op.code))
+        makeType(op.subTypeName, op.operations.map(_.code))
       }
     ).mkString("\n\n")
   }

@@ -28,6 +28,7 @@ type Query {
   # Operation 'GET /organizations' response '200'
   # Response 200 [io.flow.common.v0.models.organization]
   organizations(id: [String!], name: String, environment: Environment, parent: String, limit: Long! = 25, offset: Long! = 0, sort: String! = "name"): [Organization!]
+
   # Resource io.flow.common.v0.models.organization
   # Operation 'GET /organizations/:organization_id' response '200'
   # Response 200 io.flow.common.v0.models.organization
@@ -57,10 +58,12 @@ type OrderSummaryLineItemInputMutations {
   # Operation 'POST /lines/:id' response '200'
   # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
   createLine(id: String!, body: CheckoutLineFormInput!): OrderSummaryLineItem
+
   # Resource io.flow.experience.v0.models.order_summary_line_item_input
   # Operation 'PUT /lines/:id' response '200'
   # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
   updateLine(id: String!, body: CheckoutLineFormInput!): OrderSummaryLineItem
+
   # Resource io.flow.experience.v0.models.order_summary_line_item_input
   # Operation 'DELETE /lines/:id' response '204'
   # Response 204 unit
@@ -79,10 +82,12 @@ type OrganizationInputMutations {
   # Operation 'POST /organizations' response '201'
   # Response 201 io.flow.common.v0.models.organization_input
   createOrganization(body: OrganizationFormInput!): Organization
+
   # Resource io.flow.common.v0.models.organization_input
   # Operation 'PUT /organizations/:organization_id' response '200'
   # Response 200 io.flow.common.v0.models.organization_input
   updateOrganization(organizationId: String!, body: OrganizationPutFormInput!): Organization
+
   # Resource io.flow.common.v0.models.organization_input
   # Operation 'DELETE /organizations/:organization_id' response '204'
   # Response 204 unit

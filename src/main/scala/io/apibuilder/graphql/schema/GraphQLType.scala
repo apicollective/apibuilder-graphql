@@ -87,21 +87,21 @@ object GraphQLType {
     override val formatted: String = s"scalar ${name}"
   }
 
-  case class Enum(apiBuilderType: ApiBuilderType.Enum)
+  case class Enum(apiBuilderEnum: ApiBuilderType.Enum)
     extends StaticType(
       "enum",
-      apiBuilderType.name,
-      apiBuilderType.enum.values.map { v => Text.allCaps(v.value.getOrElse(v.name)) },
-      comment = Some(toComment(apiBuilderType)),
+      apiBuilderEnum.name,
+      apiBuilderEnum.enum.values.map { v => Text.allCaps(v.value.getOrElse(v.name)) },
+      comment = Some(toComment(apiBuilderEnum)),
     ) with NamedGraphQLType {
     assert(!name.endsWith("Input"), "Enum names should not have Input appended")
   }
 
-  case class Union(apiBuilderType: ApiBuilderType.Union, types: Seq[GraphQLTypeUnionType]) extends NamedGraphQLType {
-    override val originalName: String = apiBuilderType.name
+  case class Union(apiBuilderUnion: ApiBuilderType.Union, types: Seq[GraphQLTypeUnionType]) extends NamedGraphQLType {
+    override val originalName: String = apiBuilderUnion.name
     override val name: String = Text.pascalCase(originalName)
     override val formatted: String = Seq(
-      s"# ${toComment(apiBuilderType)}",
+      s"# ${toComment(apiBuilderUnion)}",
       s"union $name = " + types.map(_.name).mkString(" | ")
     ).mkString("\n")
   }

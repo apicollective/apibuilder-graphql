@@ -19,8 +19,8 @@ case class GraphQLResolverGenerator(multiService: MultiService) {
     if (builder.nonEmpty) {
       builder.wrapContentWithObject(toTypeName(intent))
     }
-    generateEnums(builder, types.collect { case t: GraphQLType.Enum => t.apiBuilderType})
-    generateUnions(builder, types.collect { case t: GraphQLType.Union => t.apiBuilderType})
+    generateEnums(builder, types.collect { case t: GraphQLType.Enum => t.apiBuilderEnum})
+    generateUnions(builder, types.collect { case t: GraphQLType.Union => t.apiBuilderUnion})
 
     builder.build().map(GraphQLResolvers)
   }

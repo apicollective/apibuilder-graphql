@@ -66,6 +66,11 @@ case class TypeScriptFileBuilder() {
   private val imports = collection.mutable.ListBuffer[String]()
   private val fragments = collection.mutable.ListBuffer[String]()
 
+  def add(builder: TypeScriptFile): Unit =  {
+    builder.imports.foreach { imp => addImport(imp) }
+    builder.fragments.foreach { fragment => addFragment(fragment) }
+  }
+
   def addImport(imp: String): Unit = {
     imports.append(imp)
   }

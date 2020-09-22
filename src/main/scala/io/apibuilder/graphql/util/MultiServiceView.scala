@@ -9,6 +9,7 @@ import io.apibuilder.validation.MultiService
 
 object MultiServiceView {
   val InputSuffix: String = "input"
+  def stripInputSuffix(value: String): String = Text.stripSuffix(value, Text.pascalCase(InputSuffix))
 }
 
 /**

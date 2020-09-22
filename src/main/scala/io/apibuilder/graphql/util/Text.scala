@@ -13,6 +13,14 @@ import io.apibuilder.graphql.schema.GraphQLType
  */
 object Text {
 
+   def stripSuffix(value: String, suffix: String): String = {
+    if (value.endsWith(suffix)) {
+      value.dropRight(suffix.length)
+    } else {
+      value
+    }
+  }
+
   def wrapInQuotes(str: String): String = {
     "\"" + str.replaceAll("\"", """\\"""") + "\""
   }

@@ -46,14 +46,14 @@ type Query {
 }
 
 type Mutation {
-  OrderSummaryLineItemInput: OrderSummaryLineItemInputMutations
+  OrderSummaryLineItem: OrderSummaryLineItemMutations
 
-  CheckoutInput: CheckoutInputMutations
+  Checkout: CheckoutMutations
 
-  OrganizationInput: OrganizationInputMutations
+  Organization: OrganizationMutations
 }
 
-type OrderSummaryLineItemInputMutations {
+type OrderSummaryLineItemMutations {
   # Resource io.flow.experience.v0.models.order_summary_line_item_input
   # Operation 'POST /lines/:id' response '200'
   # Response 200 io.flow.experience.v0.models.order_summary_line_item_input
@@ -70,14 +70,14 @@ type OrderSummaryLineItemInputMutations {
   deleteLine(id: String!): Unit
 }
 
-type CheckoutInputMutations {
+type CheckoutMutations {
   # Resource io.flow.checkout.backend.v0.models.checkout_input
   # Operation 'POST /v2/checkouts/session/:session_id' response '200'
   # Response 200 checkout_input
   createCheckoutBySessionId(sessionId: String!): Checkout
 }
 
-type OrganizationInputMutations {
+type OrganizationMutations {
   # Resource io.flow.common.v0.models.organization_input
   # Operation 'POST /organizations' response '201'
   # Response 201 io.flow.common.v0.models.organization_input

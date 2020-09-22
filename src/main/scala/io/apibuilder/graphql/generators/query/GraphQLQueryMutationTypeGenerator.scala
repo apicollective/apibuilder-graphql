@@ -9,7 +9,7 @@ import io.apibuilder.spec.v0.models._
 import io.apibuilder.validation.{AnyType, ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
 
 case class GraphQLQueryMutationOperation(
-  op: GraphQLOperation,
+  operation: GraphQLOperation,
   code: String,
 )
 
@@ -23,7 +23,7 @@ case class GraphQLQueryMutation(
     case GraphQLIntent.Mutation => "Mutations"
   }
 
-  val name: String = Text.pascalCase(resourceType.name)
+  val name: String = MultiServiceView.stripInputSuffix(Text.pascalCase(resourceType.name))
   val subTypeName: String = s"$name$suffix"
 }
 
@@ -43,7 +43,7 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
     }
   }
 
-  private[this] def generateOperations(intent: GraphQLIntent): Seq[GraphQLQueryMutation] = {
+  def generateOperations(intent: GraphQLIntent): Seq[GraphQLQueryMutation] = {
     GraphQLOperation.all(multiService, intent)
       .filter(_.methodIntent == intent)
       .groupBy(_.resource.`type`).map { case (resourceType, resourceOperations) =>
@@ -66,7 +66,7 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
       case Nil => ""
       case els => "(" + els.mkString(", ") + ")"
     }
-    val responseType = stripInputSuffix(converter.mustFindFieldTypeDeclaration(op.description, op.response.`type`))
+    val responseType = MultiServiceView.stripInputSuffix(converter.mustFindFieldTypeDeclaration(op.description, op.response.`type`))
 
     val code = Seq(
       toComment(op),
@@ -143,12 +143,4 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
     }
   }
 
-  private[this] def stripInputSuffix(value: String): String = {
-    val input = Text.pascalCase(MultiServiceView.InputSuffix)
-    if (value.endsWith(input)) {
-      value.dropRight(input.length)
-    } else {
-      value
-    }
-  }
 }

@@ -37,8 +37,8 @@ case class GraphQLMethodResolverGenerator(multiService: MultiService) extends Pa
   }
 
   /**
-   * organization: (_, args, { dataSources }) =>
-   * dataSources.api.get(`/organizations/${args.organizationId}`),
+   * organization: (_, __, { dataSources }) =>
+   *   dataSources.api.get(`/organizations`)
    */
   def generateMethod(builder: TypeScriptFileBuilder, op: GraphQLOperation): Unit = {
     val path = buildPath(op.intentOperation)

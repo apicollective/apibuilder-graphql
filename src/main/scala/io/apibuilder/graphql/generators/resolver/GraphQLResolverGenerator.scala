@@ -22,8 +22,8 @@ case class GraphQLResolverGenerator(multiService: MultiService) {
     if (Constants.Resolvers.includeNamespaces(intent)) {
       all.sortBy(_.name.toLowerCase()).foreach { qm =>
         val subBuilder = TypeScriptFileBuilder()
-        qm.operations.map(_.operation).foreach { op =>
-          methodResolverGenerator.generateMethod(subBuilder, op)
+        qm.operations.sortBy(_.operation.resource.`type`.name).foreach { op =>
+          methodResolverGenerator.generateMethod(subBuilder, op.operation)
         }
         subBuilder.wrapContentWithObject(qm.subTypeName)
         subBuilder.build().foreach(builder.add)
@@ -37,7 +37,7 @@ case class GraphQLResolverGenerator(multiService: MultiService) {
         builder.addFragment(typeBuilder.build())
       }
     } else {
-      all.flatMap(_.operations).foreach { op =>
+      all.flatMap(_.operations).sortBy(_.operation.resource.`type`.name).foreach { op =>
         methodResolverGenerator.generateMethod(builder, op.operation)
       }
       if (builder.nonEmpty) {

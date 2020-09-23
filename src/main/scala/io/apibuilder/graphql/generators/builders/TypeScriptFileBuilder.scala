@@ -35,15 +35,28 @@ case class TypeScriptFile(
 ) {
   import TypeScriptFile._
 
+  private[this] lazy val sortedFragments = {
+    fragments.sortBy { f =>
+      val index = if (f.startsWith("Query")) {
+        0
+      } else if (f.startsWith("Mutation")) {
+        1
+      } else {
+        2
+      }
+      (index, f.toLowerCase)
+    }
+  }
+
   val formatted: String = {
     val finalFragments = if (addDefaultExport) {
-      Seq(wrapWithDefaultExport(fragments))
+      Seq(wrapWithDefaultExport(sortedFragments))
     } else {
-      fragments
+      sortedFragments
     }
 
     Seq(
-      imports.distinct.map(toImportStatement).mkString("\n"),
+      imports.distinct.map(toImportStatement).sorted.mkString("\n"),
       joinWithComma(finalFragments),
     ).filterNot(_.isEmpty).mkString("\n\n")
   }

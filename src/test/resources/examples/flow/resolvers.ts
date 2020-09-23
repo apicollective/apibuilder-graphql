@@ -1,33 +1,37 @@
 import inputMapper from "../graphql/inputMapper";
 
 export default {
+  CheckoutMutations: {
+    createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
+  },
+
+  OrderSummaryLineItemMutations: {
+    createLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
+
+    updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.put(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
+
+    deleteLine: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.delete(`/lines/${id}`, {})
+  },
+
+  OrganizationMutations: {
+    createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
+
+    updateOrganization: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.put(`/organizations/${organizationId}`, inputMapper("OrganizationPutFormInput", body)),
+
+    deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.delete(`/organizations/${organizationId}`, {})
+  },
+
   Mutation: {
-    orderSummaryLineItem: {
-      createLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
-        dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
-
-      updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
-        dataSources.api.put(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
-
-      deleteLine: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-        dataSources.api.delete(`/lines/${id}`, {})
-    },
-
-    checkout: {
-      createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
-        dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
-    },
-
-    organization: {
-      createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
-        dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
-
-      updateOrganization: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
-        dataSources.api.put(`/organizations/${organizationId}`, inputMapper("OrganizationPutFormInput", body)),
-
-      deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
-        dataSources.api.delete(`/organizations/${organizationId}`, {})
-    }
+    orderSummaryLineItem: () => ({}),
+    checkout: () => ({}),
+    organization: () => ({})
   },
 
   ConsumerInvoiceLineDiscriminator: {

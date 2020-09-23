@@ -21,17 +21,17 @@ case class GraphQLMethodResolverGenerator(multiService: MultiService) extends Pa
   def generate(builder: TypeScriptFileBuilder, intent: GraphQLIntent): Unit = {
     val all = queryMutationTypeGenerator.generateOperations(intent)
     if (Constants.Resolvers.includeNamespaces(intent)) {
-      all.foreach { qm =>
+      all.sortBy(_.name.toLowerCase()).foreach { qm =>
         val subBuilder = TypeScriptFileBuilder()
         qm.operations.map(_.operation).foreach { op =>
-          generate(subBuilder, op)
+          generateMethod(subBuilder, op)
         }
         subBuilder.wrapContentWithObject(qm.name)
         subBuilder.build().foreach(builder.add)
       }
     } else {
       all.flatMap(_.operations.map(_.operation)).foreach { op =>
-        generate(builder, op)
+        generateMethod(builder, op)
       }
     }
   }
@@ -40,7 +40,7 @@ case class GraphQLMethodResolverGenerator(multiService: MultiService) extends Pa
    * organization: (_, args, { dataSources }) =>
    * dataSources.api.get(`/organizations/${args.organizationId}`),
    */
-  private[this] def generate(builder: TypeScriptFileBuilder, op: GraphQLOperation): Unit = {
+  def generateMethod(builder: TypeScriptFileBuilder, op: GraphQLOperation): Unit = {
     val path = buildPath(op.intentOperation)
 
     val params = allParametersWithBody(op.intentOperation)

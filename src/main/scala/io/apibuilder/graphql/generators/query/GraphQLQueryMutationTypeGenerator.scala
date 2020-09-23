@@ -52,7 +52,7 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
         resourceType,
         resourceOperations.map(generateOperations),
       )
-    }.toSeq
+    }.toSeq.sortBy(_.name.toLowerCase())
   }
 
   private[this] def generateOperations(op: GraphQLOperation): GraphQLQueryMutationOperation = {

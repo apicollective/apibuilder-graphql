@@ -6,9 +6,9 @@ export default {
       dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
   },
 
-  OrderSummaryLineItemMutations: {
-    createLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
+  CheckoutLineMutations: {
+    updateLine: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post("/lines", inputMapper("CheckoutLineFormInput", body)),
 
     updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
       dataSources.api.put(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
@@ -29,8 +29,8 @@ export default {
   },
 
   Mutation: {
-    orderSummaryLineItem: () => ({}),
     checkout: () => ({}),
+    checkoutLine: () => ({}),
     organization: () => ({})
   },
 
@@ -47,14 +47,14 @@ export default {
     b2bInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/b2b/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
-    line: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/lines/${id}`),
-
-    publicKey: (_: any, { organization }: { organization: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/encryption/keys/latest`),
+    checkout: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/v2/checkouts/${id}`),
 
     consumerInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/consumer/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
+
+    creditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
     organizations: (_: any, { id, name, environment, parent, limit, offset, sort }: { id: any, name: string, environment: any, parent: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get("/organizations", { id, name, environment: inputMapper("Environment", environment), parent, limit, offset, sort }),
@@ -62,22 +62,13 @@ export default {
     organization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/organizations/${organizationId}`),
 
-    creditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
-
-    checkout: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/v2/checkouts/${id}`)
+    publicKey: (_: any, { organization }: { organization: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/encryption/keys/latest`)
   },
 
   Environment: {
     SANDBOX: "sandbox",
     PRODUCTION: "production"
-  },
-
-  ConsumerInvoiceCustomerType: {
-    BUSINESS_EU_VERIFIED: "business_eu_verified",
-    BUSINESS_NON_VERIFIED: "business_non_verified",
-    INDIVIDUAL: "individual"
   },
 
   ConsumerInvoiceDocumentType: {
@@ -88,6 +79,12 @@ export default {
     PENDING: "pending",
     AVAILABLE: "available",
     INVALID: "invalid"
+  },
+
+  ConsumerInvoiceCustomerType: {
+    BUSINESS_EU_VERIFIED: "business_eu_verified",
+    BUSINESS_NON_VERIFIED: "business_non_verified",
+    INDIVIDUAL: "individual"
   },
 
   TaxVerificationResult: {

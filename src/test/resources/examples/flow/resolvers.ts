@@ -1,14 +1,45 @@
 import inputMapper from "../graphql/inputMapper";
 
 export default {
-  CheckoutMutations: {
-    createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
+  Query: {
+    b2bCreditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/b2b/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
+
+    b2bInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/b2b/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
+
+    checkout: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/v2/checkouts/${id}`),
+
+    consumerInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/consumer/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
+
+    creditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
+
+    organizations: (_: any, { id, name, environment, parent, limit, offset, sort }: { id: any, name: string, environment: any, parent: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get("/organizations", { id, name, environment: inputMapper("Environment", environment), parent, limit, offset, sort }),
+
+    organization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/organizations/${organizationId}`),
+
+    publicKey: (_: any, { organization }: { organization: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/encryption/keys/latest`)
   },
 
-  OrderSummaryLineItemMutations: {
-    createLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
+  Mutation: {
+    checkout: () => ({}), // CheckoutMutations
+    checkoutLine: () => ({}), // CheckoutLineMutations
+    organization: () => ({}) // OrganizationMutations
+  },
+
+  CheckoutErrorCode: {
+    GENERIC_ERROR: "generic_error"
+  },
+
+  CheckoutLineMutations: {
+    updateLine: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post("/lines", inputMapper("CheckoutLineFormInput", body)),
 
     updateLine: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
       dataSources.api.put(`/lines/${id}`, inputMapper("CheckoutLineFormInput", body)),
@@ -17,61 +48,14 @@ export default {
       dataSources.api.delete(`/lines/${id}`, {})
   },
 
-  OrganizationMutations: {
-    createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
-
-    updateOrganization: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.put(`/organizations/${organizationId}`, inputMapper("OrganizationPutFormInput", body)),
-
-    deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.delete(`/organizations/${organizationId}`, {})
+  CheckoutMutations: {
+    createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
   },
 
-  Mutation: {
-    orderSummaryLineItem: () => ({}),
-    checkout: () => ({}),
-    organization: () => ({})
-  },
-
-  ConsumerInvoiceLineDiscriminator: {
-    ITEM: "item",
-    DISCOUNT: "discount",
-    SHIPPING: "shipping"
-  },
-
-  Query: {
-    b2bCreditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/b2b/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
-
-    b2bInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/b2b/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
-
-    line: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/lines/${id}`),
-
-    publicKey: (_: any, { organization }: { organization: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/encryption/keys/latest`),
-
-    consumerInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/consumer/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
-
-    organizations: (_: any, { id, name, environment, parent, limit, offset, sort }: { id: any, name: string, environment: any, parent: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get("/organizations", { id, name, environment: inputMapper("Environment", environment), parent, limit, offset, sort }),
-
-    organization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/organizations/${organizationId}`),
-
-    creditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/${organization}/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
-
-    checkout: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/v2/checkouts/${id}`)
-  },
-
-  Environment: {
-    SANDBOX: "sandbox",
-    PRODUCTION: "production"
+  CheckoutRedirectMethod: {
+    GET: "get",
+    POST: "post"
   },
 
   ConsumerInvoiceCustomerType: {
@@ -82,33 +66,6 @@ export default {
 
   ConsumerInvoiceDocumentType: {
     PDF: "pdf"
-  },
-
-  ConsumerInvoiceStatus: {
-    PENDING: "pending",
-    AVAILABLE: "available",
-    INVALID: "invalid"
-  },
-
-  TaxVerificationResult: {
-    VALID: "valid",
-    INVALID: "invalid",
-    UNABLE_TO_VALIDATE: "unable_to_validate"
-  },
-
-  EconomicTitleLocation: {
-    HIGH_SEAS: "high_seas",
-    ORIGINATION: "origination",
-    DESTINATION: "destination"
-  },
-
-  CheckoutErrorCode: {
-    GENERIC_ERROR: "generic_error"
-  },
-
-  CheckoutRedirectMethod: {
-    GET: "get",
-    POST: "post"
   },
 
   ConsumerInvoiceLine: {
@@ -129,5 +86,45 @@ export default {
       }
       throw `Unable to resolve discriminator '${obj.discriminator}' for union 'ConsumerInvoiceLine'`;
     }
+  },
+
+  ConsumerInvoiceLineDiscriminator: {
+    ITEM: "item",
+    DISCOUNT: "discount",
+    SHIPPING: "shipping"
+  },
+
+  ConsumerInvoiceStatus: {
+    PENDING: "pending",
+    AVAILABLE: "available",
+    INVALID: "invalid"
+  },
+
+  EconomicTitleLocation: {
+    HIGH_SEAS: "high_seas",
+    ORIGINATION: "origination",
+    DESTINATION: "destination"
+  },
+
+  Environment: {
+    SANDBOX: "sandbox",
+    PRODUCTION: "production"
+  },
+
+  OrganizationMutations: {
+    createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
+
+    updateOrganization: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.put(`/organizations/${organizationId}`, inputMapper("OrganizationPutFormInput", body)),
+
+    deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.delete(`/organizations/${organizationId}`, {})
+  },
+
+  TaxVerificationResult: {
+    VALID: "valid",
+    INVALID: "invalid",
+    UNABLE_TO_VALIDATE: "unable_to_validate"
   }
 }

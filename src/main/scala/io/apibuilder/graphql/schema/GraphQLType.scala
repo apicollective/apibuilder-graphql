@@ -160,6 +160,7 @@ object GraphQLType {
   }
 
   abstract class QueryMutationType(intent: GraphQLIntent, val originalName: String, operations: Seq[GraphQLQueryMutation]) {
+    private[this] val sortedOperations = operations.sortBy(_.name.toLowerCase())
     val name: String = Text.pascalCase(originalName)
     val formatted: String = {
       if (Constants.Resolvers.includeNamespaces(intent)) {
@@ -169,14 +170,14 @@ object GraphQLType {
       }
     }
 
-    private[this] def flat: String = makeType(name, operations.flatMap(_.operations.map(_.code)))
+    private[this] def flat: String = makeType(name, sortedOperations.flatMap(_.operations.map(_.code)))
 
     private[this] def namespaces: String = (
       Seq(
-        makeType(name, operations.map { op =>
+        makeType(name, sortedOperations.map { op =>
           s"${op.name}: ${op.subTypeName}"
         })
-      ) ++ operations.map { op =>
+      ) ++ sortedOperations.map { op =>
         makeType(op.subTypeName, op.operations.map(_.code))
       }
     ).mkString("\n\n")

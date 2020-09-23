@@ -30,7 +30,7 @@ case class GraphQLResolverGenerator(multiService: MultiService) {
       }
 
       val typeBuilder = all.foldLeft(JavaScriptObjectBuilder(toTypeName(intent))) { case (b, qm) =>
-        b.withJavaScript(qm.name, MagicDelegation)
+        b.withJavaScript(qm.name, MagicDelegation, Some(qm.subTypeName))
       }
 
       if (builder.nonEmpty) {

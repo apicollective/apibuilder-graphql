@@ -2,21 +2,19 @@ package io.apibuilder.graphql.generators.builders
 
 import io.apibuilder.graphql.util.Text
 
-case class JavaScriptObjectBuilder(name: String, values: Map[String, String] = Map.empty) {
+case class JavaScriptValue(code: String, comment: Option[String] = None)
 
-  def withJavaScript(name: String, javascript: String): JavaScriptObjectBuilder = {
+case class JavaScriptObjectBuilder(name: String, values: Map[String, JavaScriptValue] = Map.empty) {
+
+  def withJavaScript(name: String, javascript: String, comment: Option[String] = None): JavaScriptObjectBuilder = {
     this.copy(
-      values = values ++ Map(name -> javascript)
+      values = values ++ Map(name -> JavaScriptValue(javascript, comment))
     )
   }
 
   def withValue(name: String, value: String): JavaScriptObjectBuilder = {
-    withValues(Map(name -> value))
-  }
-
-  def withValues(all: Map[String, String]): JavaScriptObjectBuilder = {
     this.copy(
-      values = values ++ all.map { case (k, v) => k -> Text.wrapInQuotes(v) }
+      values = values ++ Map(name -> JavaScriptValue(Text.wrapInQuotes(value)))
     )
   }
 
@@ -24,7 +22,14 @@ case class JavaScriptObjectBuilder(name: String, values: Map[String, String] = M
     Seq(
       s"$name: {",
       Text.indent(
-        values.map { case (k, v) => s"$k: $v" }.mkString(",\n")
+        values.zipWithIndex.map { case ((k, v), i) =>
+          val c = v.comment match {
+            case None => ""
+            case Some(comment) => s" // $comment"
+          }
+          val comma = if (i == values.size - 1) { "" } else { "," }
+          s"$k: ${v.code}$comma$c"
+        }.mkString("\n")
       ),
       "}",
     ).mkString("\n")

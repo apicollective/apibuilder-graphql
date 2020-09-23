@@ -28,9 +28,9 @@ export default {
   },
 
   Mutation: {
-    checkout: () => ({}),
-    checkoutLine: () => ({}),
-    organization: () => ({})
+    checkout: () => ({}), // CheckoutMutations
+    checkoutLine: () => ({}), // CheckoutLineMutations
+    organization: () => ({}) // OrganizationMutations
   },
 
   CheckoutErrorCode: {

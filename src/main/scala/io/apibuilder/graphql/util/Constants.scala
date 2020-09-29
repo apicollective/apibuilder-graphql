@@ -8,6 +8,7 @@ object Constants {
     val Name: String  = "graphql"
     object Fields {
       val Name: String = "name"
+      val NameSpace: String = "namespace"
     }
   }
 

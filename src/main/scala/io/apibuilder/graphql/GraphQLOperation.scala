@@ -2,6 +2,7 @@ package io.apibuilder.graphql
 
 import apibuilder.{ApiBuilderHelper, ApiBuilderHelperImpl}
 import io.apibuilder.graphql.schema.GraphQLIntent
+import io.apibuilder.graphql.util.{MultiServiceView, Text}
 import io.apibuilder.spec.v0.models._
 import io.apibuilder.validation.{AnyType, ApiBuilderService, ApiBuilderType, MultiService}
 
@@ -22,8 +23,12 @@ case class GraphQLOperation(
   response: Response,
   attribute: GraphQLAttribute,
 ) {
+
   private[this] val helper: ApiBuilderHelper = ApiBuilderHelperImpl(multiService)
   val methodIntent: GraphQLIntent = GraphQLIntent(originalOperation.method)
+  val namespace: String = attribute.namespace.getOrElse {
+    MultiServiceView.stripInputSuffix(Text.camelCase(resource.`type`.name))
+  }
 
   lazy val intentOperation: Operation = graphQLIntent match {
     case GraphQLIntent.Query => operationForQuery
@@ -127,7 +132,7 @@ object GraphQLOperation {
     }
   }
 
-  private[this] def toInternalResource(ms: MultiService, service: ApiBuilderService, resource: Resource) = {
+  private[this] def toInternalResource(ms: MultiService, service: ApiBuilderService, resource: Resource): InternalResource = {
     InternalResource(
       resource,
       ms.findType(service.namespace, resource.`type`).getOrElse {

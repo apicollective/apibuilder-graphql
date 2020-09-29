@@ -6,7 +6,7 @@ import play.api.libs.json.{JsObject, JsString}
 /**
  * Represents the data in the ApiBuilder attribute named 'graphql'
  */
-case class GraphQLAttribute(name: String)
+case class GraphQLAttribute(name: String, namespace: Option[String])
 
 object GraphQLAttribute {
 
@@ -21,9 +21,12 @@ object GraphQLAttribute {
   }
 
   private[this] def fromJson(js: JsObject): Option[GraphQLAttribute] = {
-    (js \ util.Constants.GraphQLAttribute.Fields.Name).asOpt[JsString].map { name =>
+    import util.Constants.GraphQLAttribute.Fields._
+    def get(n: String) = (js \ n).asOpt[JsString].map(_.value)
+    get(Name).map { name =>
       GraphQLAttribute(
-        name = name.value,
+        name = name,
+        namespace = get(NameSpace),
       )
     }
   }

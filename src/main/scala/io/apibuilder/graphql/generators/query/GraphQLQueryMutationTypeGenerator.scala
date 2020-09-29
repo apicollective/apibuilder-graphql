@@ -6,7 +6,7 @@ import io.apibuilder.graphql.generators.schema.ApiBuilderTypeToGraphQLConverter
 import io.apibuilder.graphql.schema.{GraphQLIntent, GraphQLQueryMutationType, GraphQLType}
 import io.apibuilder.graphql.util.{MultiServiceView, Text}
 import io.apibuilder.spec.v0.models._
-import io.apibuilder.validation.{AnyType, ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
+import io.apibuilder.validation.{ApiBuilderService, ApiBuilderType, MultiService, ScalarType}
 
 case class GraphQLQueryMutationOperation(
   operation: GraphQLOperation,
@@ -15,7 +15,7 @@ case class GraphQLQueryMutationOperation(
 
 case class GraphQLQueryMutation(
   intent: GraphQLIntent,
-  resourceType: AnyType,
+  namespace: String,
   operations: Seq[GraphQLQueryMutationOperation],
 ) {
   private[this] val suffix: String = intent match {
@@ -23,7 +23,7 @@ case class GraphQLQueryMutation(
     case GraphQLIntent.Mutation => "Mutations"
   }
 
-  val name: String = MultiServiceView.stripInputSuffix(Text.camelCase(resourceType.name))
+  val name: String = Text.camelCase(namespace)
   val subTypeName: String = Text.pascalCase(s"$name$suffix")
 }
 
@@ -46,10 +46,10 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
   def generateOperations(intent: GraphQLIntent): Seq[GraphQLQueryMutation] = {
     GraphQLOperation.all(multiService, intent)
       .filter(_.methodIntent == intent)
-      .groupBy(_.resource.`type`).map { case (resourceType, resourceOperations) =>
+      .groupBy(_.namespace).map { case (namespace, resourceOperations) =>
       GraphQLQueryMutation(
         intent,
-        resourceType,
+        namespace,
         resourceOperations.map(generateOperations),
       )
     }.toSeq.sortBy(_.name.toLowerCase())

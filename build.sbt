@@ -23,7 +23,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "io.apibuilder" %% "apibuilder-validation" % "0.4.28",
       "org.typelevel" %% "cats-core" % "2.1.1",
-      "org.scalatest" %% "scalatest" % "3.2.1" % Test,
+      "org.scalatest" %% "scalatest" % "3.2.7" % Test,
       compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.7.3" cross CrossVersion.full),
       "com.github.ghik" %% "silencer-lib" % "1.7.3" % Provided cross CrossVersion.full,
     ),

@@ -11,14 +11,14 @@ export default {
     checkout: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/v2/checkouts/${id}`),
 
-    checkoutLine: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/lines/${id}`),
-
     consumerInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/consumer/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
     creditMemos: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/credit/memos`, { id, key, order_number: orderNumber, limit, offset, sort }),
+
+    orderSummary: (_: any, { organization, number }: { organization: string, number: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get(`/${organization}/order/summaries/${number}`),
 
     organizations: (_: any, { id, name, environment, parent, limit, offset, sort }: { id: any, name: string, environment: any, parent: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get("/organizations", { id, name, environment: inputMapper("Environment", environment), parent, limit, offset, sort }),
@@ -32,76 +32,16 @@ export default {
 
   Mutation: {
     checkout: () => ({}), // CheckoutMutations
-    checkoutLine: () => ({}), // CheckoutLineMutations
-    checkoutModification: () => ({}), // CheckoutModificationMutations
     organization: () => ({}) // OrganizationMutations
   },
 
-  CheckoutLineMutations: {
-    createLine: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post("/lines", inputMapper("CheckoutLineFormInput", body)),
-
-    updateLineQuantity: (_: any, { id, body }: { id: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.put(`/lines/${id}/quantity`, inputMapper("CheckoutLineQuantityFormInput", body)),
-
-    deleteLine: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.delete(`/lines/${id}`, {})
-  },
-
-  CheckoutModificationForm: {
-    __resolveType(obj: any, _: any, __: any) {
-      switch (obj.discriminator) {
-        case "checkout_modification_attributes_form":
-          return "CheckoutModificationAttributesForm";
-        case "checkout_modification_currency_form":
-          return "CheckoutModificationCurrencyForm";
-        case "checkout_modification_destination_address_streets_form":
-          return "CheckoutModificationDestinationAddressStreetsForm";
-        case "checkout_modification_destination_address_city_form":
-          return "CheckoutModificationDestinationAddressCityForm";
-        case "checkout_modification_destination_address_province_form":
-          return "CheckoutModificationDestinationAddressProvinceForm";
-        case "checkout_modification_destination_address_postal_form":
-          return "CheckoutModificationDestinationAddressPostalForm";
-        case "checkout_modification_destination_address_country_form":
-          return "CheckoutModificationDestinationAddressCountryForm";
-        case "checkout_modification_language_form":
-          return "CheckoutModificationLanguageForm";
-        case "checkout_modification_line_form":
-          return "CheckoutModificationLineForm";
-        case "checkout_line_modification_delete_form":
-          return "CheckoutLineModificationDeleteForm";
-        case "checkout_line_modification_quantity_form":
-          return "CheckoutLineModificationQuantityForm";
-        case "checkout_modification_promotion_code_form":
-          return "CheckoutModificationPromotionCodeForm";
-      }
-      throw `Unable to resolve discriminator '${obj.discriminator}' for union 'CheckoutModificationForm'`;
-    }
-  },
-
-  CheckoutModificationFormDiscriminator: {
-    CHECKOUT_MODIFICATION_ATTRIBUTES_FORM: "checkout_modification_attributes_form",
-    CHECKOUT_MODIFICATION_CURRENCY_FORM: "checkout_modification_currency_form",
-    CHECKOUT_MODIFICATION_DESTINATION_ADDRESS_STREETS_FORM: "checkout_modification_destination_address_streets_form",
-    CHECKOUT_MODIFICATION_DESTINATION_ADDRESS_CITY_FORM: "checkout_modification_destination_address_city_form",
-    CHECKOUT_MODIFICATION_DESTINATION_ADDRESS_PROVINCE_FORM: "checkout_modification_destination_address_province_form",
-    CHECKOUT_MODIFICATION_DESTINATION_ADDRESS_POSTAL_FORM: "checkout_modification_destination_address_postal_form",
-    CHECKOUT_MODIFICATION_DESTINATION_ADDRESS_COUNTRY_FORM: "checkout_modification_destination_address_country_form",
-    CHECKOUT_MODIFICATION_LANGUAGE_FORM: "checkout_modification_language_form",
-    CHECKOUT_MODIFICATION_LINE_FORM: "checkout_modification_line_form",
-    CHECKOUT_LINE_MODIFICATION_DELETE_FORM: "checkout_line_modification_delete_form",
-    CHECKOUT_LINE_MODIFICATION_QUANTITY_FORM: "checkout_line_modification_quantity_form",
-    CHECKOUT_MODIFICATION_PROMOTION_CODE_FORM: "checkout_modification_promotion_code_form"
-  },
-
-  CheckoutModificationMutations: {
-    checkoutModification: (_: any, { checkoutId, body }: { checkoutId: string, body: any }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/v2/checkouts/${checkoutId}/modifications`, inputMapper("CheckoutModificationFormInput", body))
+  B2bInvoiceType: {
+    SELF_BILL_INVOICE: "self_bill_invoice",
+    INVOICE: "invoice"
   },
 
   CheckoutMutations: {
-    createCheckoutBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
+    createBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
   },
 
@@ -159,14 +99,20 @@ export default {
   },
 
   OrganizationMutations: {
-    createOrganization: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
+    create: (_: any, { body }: { body: any }, { dataSources }: { dataSources: any }) =>
       dataSources.api.post("/organizations", inputMapper("OrganizationFormInput", body)),
 
-    updateOrganization: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
+    update: (_: any, { organizationId, body }: { organizationId: string, body: any }, { dataSources }: { dataSources: any }) =>
       dataSources.api.put(`/organizations/${organizationId}`, inputMapper("OrganizationPutFormInput", body)),
 
-    deleteOrganization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
+    delete: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.delete(`/organizations/${organizationId}`, {})
+  },
+
+  OrganizationStatus: {
+    ACTIVE: "active",
+    INACTIVE: "inactive",
+    DEACTIVATED: "deactivated"
   },
 
   TaxVerificationResult: {

@@ -2,7 +2,7 @@ name := "apibuilder-graphql"
 
 organization := "io.apibuilder"
 
-scalaVersion in ThisBuild := "2.13.5"
+ThisBuild / scalaVersion := "2.13.5"
 
 lazy val allScalacOptions = Seq(
   "-deprecation",
@@ -50,4 +50,3 @@ publishTo := {
   }
 }
 
-version := "0.0.10"

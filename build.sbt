@@ -40,7 +40,6 @@ lazy val root = project
     scalacOptions ++= allScalacOptions,
   )
 
-
 publishTo := {
   val host = "https://flow.jfrog.io/flow"
   if (isSnapshot.value) {
@@ -50,4 +49,3 @@ publishTo := {
   }
 }
 
-version := "0.0.11"

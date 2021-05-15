@@ -34,7 +34,7 @@ lazy val root = project
     libraryDependencies ++= Seq(
       "io.apibuilder" %% "apibuilder-validation" % "0.4.28",
       "org.typelevel" %% "cats-core" % "2.1.1",
-      "org.scalatest" %% "scalatest" % "3.2.8" % Test,
+      "org.scalatest" %% "scalatest" % "3.2.9" % Test,
     ),
     testOptions += Tests.Argument("-oF"),
     scalacOptions ++= allScalacOptions,

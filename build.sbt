@@ -1,8 +1,9 @@
+
 name := "apibuilder-graphql"
 
 organization := "io.apibuilder"
 
-ThisBuild / scalaVersion := "2.13.6"
+ThisBuild / scalaVersion := "2.13.16"
 
 lazy val allScalacOptions = Seq(
   "-deprecation",
@@ -19,6 +20,7 @@ lazy val resolversSettings = Seq(
   resolvers += "Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/",
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/",
+  resolvers += "jitpack" at "https://jitpack.io",
   credentials += Credentials(
     "Artifactory Realm",
     "flow.jfrog.io",
@@ -32,9 +34,9 @@ lazy val root = project
   .settings(resolversSettings)
   .settings(
     libraryDependencies ++= Seq(
-      "io.apibuilder" %% "apibuilder-validation" % "0.4.28",
-      "org.typelevel" %% "cats-core" % "2.1.1",
-      "org.scalatest" %% "scalatest" % "3.2.9" % Test,
+      "com.github.apicollective" %% "apibuilder-validation" % "0.5.8",
+      "org.typelevel" %% "cats-core" % "2.10.0",
+      "org.scalatest" %% "scalatest" % "3.2.19" % Test,
     ),
     testOptions += Tests.Argument("-oF"),
     scalacOptions ++= allScalacOptions,

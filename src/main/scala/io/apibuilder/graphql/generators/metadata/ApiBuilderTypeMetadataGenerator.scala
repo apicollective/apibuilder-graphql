@@ -37,11 +37,11 @@ object ApiBuilderTypeMetadataGenerator {
     }
   }
 
-  private[this] def generate(enum: GraphQLType.Enum): String = {
+  private[this] def generate(`enum`: GraphQLType.Enum): String = {
     Seq(
-      s"new EnumData(${Text.wrapInQuotes(enum.name)}, [",
+      s"new EnumData(${Text.wrapInQuotes(`enum`.name)}, [",
       Text.indent(
-        enum.apiBuilderEnum.`enum`.values.map { v =>
+        `enum`.apiBuilderEnum.`enum`.values.map { v =>
           val serverName = v.value.getOrElse(v.name)
           val graphQLName = Text.allCaps(serverName)
           s"new EnumValue(${Text.wrapInQuotes(graphQLName)}, ${Text.wrapInQuotes(serverName)})"

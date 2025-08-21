@@ -126,6 +126,7 @@ case class GraphQLQueryMutationTypeGenerator(multiService: MultiService) extends
               }
               case _: ApiBuilderType.Model => unsupportedError
               case _: ApiBuilderType.Union => unsupportedError
+              case _: ApiBuilderType.Interface => unsupportedError
               case _: ApiBuilderType.Enum => Text.allCaps(d)
             }
           }

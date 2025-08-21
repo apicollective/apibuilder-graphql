@@ -64,6 +64,9 @@ case class ApiBuilderTypeToGraphQLConverter(
       case v: ApiBuilderType.Union => trace("union", v.name); withNamespace(v) { converter =>
         unionGenerator.generate(converter, v)
       }
+      case v: ApiBuilderType.Interface => trace("interface", v.name); withNamespace(v) { converter =>
+        modelGenerator.generate(converter, v)
+      }
     }
   }
 

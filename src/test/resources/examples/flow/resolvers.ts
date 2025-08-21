@@ -8,9 +8,6 @@ export default {
     b2bInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/b2b/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
-    checkout: (_: any, { id }: { id: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get(`/v2/checkouts/${id}`),
-
     consumerInvoices: (_: any, { organization, id, key, orderNumber, limit, offset, sort }: { organization: string, id: any, key: string, orderNumber: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/consumer/invoices`, { id, key, order_number: orderNumber, limit, offset, sort }),
 
@@ -20,8 +17,8 @@ export default {
     orderSummary: (_: any, { organization, number }: { organization: string, number: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/${organization}/order/summaries/${number}`),
 
-    organizations: (_: any, { id, name, environment, parent, limit, offset, sort }: { id: any, name: string, environment: any, parent: string, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.get("/organizations", { id, name, environment: inputMapper("Environment", environment), parent, limit, offset, sort }),
+    organizations: (_: any, { id, channelId, name, environment, parent, inChannel, limit, offset, sort }: { id: any, channelId: string, name: string, environment: any, parent: string, inChannel: boolean, limit: number, offset: number, sort: string }, { dataSources }: { dataSources: any }) =>
+      dataSources.api.get("/organizations", { id, channel_id: channelId, name, environment: inputMapper("Environment", environment), parent, in_channel: inChannel, limit, offset, sort }),
 
     organization: (_: any, { organizationId }: { organizationId: string }, { dataSources }: { dataSources: any }) =>
       dataSources.api.get(`/organizations/${organizationId}`),
@@ -31,18 +28,12 @@ export default {
   },
 
   Mutation: {
-    checkout: () => ({}), // CheckoutMutations
     organization: () => ({}) // OrganizationMutations
   },
 
   B2bInvoiceType: {
     SELF_BILL_INVOICE: "self_bill_invoice",
     INVOICE: "invoice"
-  },
-
-  CheckoutMutations: {
-    createBySessionId: (_: any, { sessionId }: { sessionId: string }, { dataSources }: { dataSources: any }) =>
-      dataSources.api.post(`/v2/checkouts/session/${sessionId}`, {})
   },
 
   ConsumerInvoiceCustomerType: {
@@ -93,6 +84,12 @@ export default {
     DESTINATION: "destination"
   },
 
+  EntityIdentifierType: {
+    IOSS: "ioss",
+    VOEC: "voec",
+    ZAZ: "zaz"
+  },
+
   Environment: {
     SANDBOX: "sandbox",
     PRODUCTION: "production"
@@ -112,7 +109,13 @@ export default {
   OrganizationStatus: {
     ACTIVE: "active",
     INACTIVE: "inactive",
-    DEACTIVATED: "deactivated"
+    DEACTIVATED: "deactivated",
+    PROVISIONED: "provisioned"
+  },
+
+  OrganizationType: {
+    STANDALONE: "standalone",
+    CHANNEL: "channel"
   },
 
   TaxVerificationResult: {

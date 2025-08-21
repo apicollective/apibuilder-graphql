@@ -1,9 +1,9 @@
 package io.apibuilder.graphql.util
 
 import apibuilder.ApiBuilderHelper
-import io.apibuilder.rewriter._
-import io.apibuilder.graphql.schema.GraphQLIntent
 import io.apibuilder.graphql.GraphQLAttribute
+import io.apibuilder.graphql.schema.GraphQLIntent
+import io.apibuilder.rewriter._
 import io.apibuilder.spec.v0.models.{Operation, Response}
 import io.apibuilder.validation.MultiService
 
@@ -41,6 +41,7 @@ case class MultiServiceView(multiService: MultiService) {
         all.headOption.toSeq
       },
       UnionTypesMustBeModelsRewriter,
+      InterfaceTypesRewriter,
       RenameTypesByAttributeRewriter(intent),
       ReduceTypesRewriter(intent),
     )

@@ -13,14 +13,19 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '13' ]
-        scala: [ '2.13.6' ]
+        java: [ '17' ]
+        scala: [ '2.13.16' ]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up JDK
-      uses: actions/setup-java@v2
+      uses: actions/setup-java@v4
       with:
-        java-version: ${{ matrix.java }}
-        distribution: 'zulu'
+        distribution: temurin
+        java-version: ${{matrix.java}}
+        cache: sbt
+    - name: print Java version
+      run: java -version
+    - name: Setup sbt launcher
+      uses: sbt/setup-sbt@v1
     - name: Run tests
       run: sbt ++${{ matrix.scala }} clean test

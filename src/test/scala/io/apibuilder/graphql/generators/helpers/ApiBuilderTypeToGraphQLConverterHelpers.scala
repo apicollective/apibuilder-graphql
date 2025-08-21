@@ -14,7 +14,7 @@ trait ApiBuilderTypeToGraphQLConverterHelpers extends MultiServiceBuilders {
     schema.ApiBuilderTypeToGraphQLConverter(
       multiService,
       GraphQLIntent.Query,
-      namespace = multiService.services().head.namespace,
+      namespace = multiService.services.head.namespace,
     )
   }
 

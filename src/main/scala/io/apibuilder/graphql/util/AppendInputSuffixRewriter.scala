@@ -12,6 +12,7 @@ object AppendInputSuffixRewriter extends MultiServiceRewriter {
       case t: ApiBuilderType.Enum => t
       case t: ApiBuilderType.Model => addSuffix(t)
       case t: ApiBuilderType.Union => addSuffix(t)
+      case t: ApiBuilderType.Interface => addSuffix(t)
     }.rewrite(multiService)
   }
 

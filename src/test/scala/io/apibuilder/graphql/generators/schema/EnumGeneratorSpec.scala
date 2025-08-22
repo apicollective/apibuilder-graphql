@@ -13,11 +13,11 @@ class EnumGeneratorSpec extends AnyWordSpec with Matchers
 
   private[this] val Namespace = "testns"
 
-  private[this] def gen(enum: models.Enum): String = {
+  private[this] def gen(`enum`: models.Enum): String = {
     GraphQLType.Enum(
       ApiBuilderType.Enum(
-        ApiBuilderService(makeService(enums = Seq(enum), namespace = Namespace)),
-        enum,
+        ApiBuilderService(makeService(enums = Seq(`enum`), namespace = Namespace)),
+        `enum`,
       )
     ).formatted
   }

@@ -18,9 +18,9 @@ class ReadmeSpec extends AnyWordSpec with Matchers {
         "https://app.apibuilder.io/apicollective/apibuilder-generator/latest/service.json",
         "https://app.apibuilder.io/apicollective/apibuilder-api/latest/service.json"
       )
-    ) match {
+    ).toEither match {
       case Left(errors) => {
-        println(s"Error downloading service: " + errors.mkString(", "))
+        println(s"Error downloading service: " + errors.toNonEmptyList.toList.mkString(", "))
       }
       case Right(multiService) => {
         GraphQLCodeGenerator.Default.generate(multiService) match {

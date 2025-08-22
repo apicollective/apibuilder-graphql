@@ -10,10 +10,10 @@ class GraphQLCodeGeneratorSpec extends AnyWordSpec with Matchers
   with FileHelpers
 {
 
-  val SpecsUrl = "https://s3.amazonaws.com/io.flow.aws-s3-public/util/lib-apibuilder/specs.zip"
+  val SpecsUrl = getClass.getResource("/specs/lib-apibuilder.zip")
 
   "generates flow graphql schema" in {
-    MultiService.fromUrl(SpecsUrl) match {
+    MultiService.fromUrl(SpecsUrl.toExternalForm).toEither match {
       case Left(errors) => sys.error(s"Error downloading ${SpecsUrl}: $errors")
       case Right(multiService) => {
         GraphQLCodeGenerator.Default.generate(multiService) match {

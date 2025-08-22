@@ -17,6 +17,7 @@ case class RenameTypesByAttributeRewriter(intent: GraphQLIntent) extends MultiSe
       case e: ApiBuilderType.Enum => name(e.`enum`.attributes)
       case e: ApiBuilderType.Model => name(e.model.attributes)
       case e: ApiBuilderType.Union => name(e.union.attributes)
+      case e: ApiBuilderType.Interface => name(e.interface.attributes)
     }
   }
 

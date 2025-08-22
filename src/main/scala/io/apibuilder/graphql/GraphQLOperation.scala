@@ -110,7 +110,7 @@ object GraphQLOperation {
   }
 
   def all(ms: MultiService, intent: GraphQLIntent): Seq[GraphQLOperation] = {
-    ms.services().flatMap { service =>
+    ms.services.flatMap { service =>
       service.service.resources.flatMap { resource =>
         resource.operations.flatMap { operation =>
           GraphQLAttribute.fromOperation(operation).toSeq.flatMap { attribute =>
